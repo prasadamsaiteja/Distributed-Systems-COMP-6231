@@ -151,19 +151,19 @@ public class DCRSImpl {
 	}
 
 	
-	public Any enrolCourse(String studentID, String courseID, String semester) {
+	public SimpleEntry<Boolean , String> enrolCourse(String studentID, String courseID, String semester) {
 
 		logManager.writeLog("REQUEST TYPE:enrolcourse"+"parameters:"+studentID+","+courseID+","+semester);
 		String status="Failure";
-		Any retValue = orb.create_any();
+		//Any retValue = orb.create_any();
 		SimpleEntry<Boolean, String> message =new SimpleEntry<Boolean, String>(true, "course enrolled successfully");
 
 		
 		if(!(returnSemesterCountForStudent(studentID, semester)<3)) {
 			logManager.writeLog("Request Failed due to course limit exceeding per sem");
 			message =new SimpleEntry<Boolean, String>(true, "course enrolled successfully");
-			retValue.insert_Value( (java.io.Serializable) message);
-			return retValue;
+			//retValue.insert_Value( (java.io.Serializable) message);
+			return message;
 		}
 		if(department.equalsIgnoreCase("comp"))
 			status=commonEnrolmentFunctionality(studentID,courseID,semester,"comp","soen","inse");
@@ -177,8 +177,8 @@ public class DCRSImpl {
 		else {
 			message =new SimpleEntry<Boolean, String>(false, "course enrolment"+" "+status);
 		}
-		retValue.insert_Value( (java.io.Serializable) message);
-		return retValue;
+		//retValue.insert_Value( (java.io.Serializable) message);
+		return message;
 	}
 
 
@@ -719,7 +719,7 @@ public class DCRSImpl {
 
 
 
-	public Any listCourseAvailability(String semester)  {
+	public HashMap<String, Integer> listCourseAvailability(String semester)  {
 		logManager.writeLog("REQUEST TYPE: listCourseAvailability"+"parameters:"+semester);
 		
 		HashMap<String, Integer> availableCourseList=new HashMap<>();
@@ -736,11 +736,11 @@ public class DCRSImpl {
 		}
 
 		
-		Any retValue = orb.create_any();
+	/*	Any retValue = orb.create_any();
 		
 
-		retValue.insert_Value( (java.io.Serializable) availableCourseList);
-		return retValue;
+		retValue.insert_Value( (java.io.Serializable) availableCourseList);*/
+		return availableCourseList;
 
 
 
@@ -815,7 +815,7 @@ public class DCRSImpl {
 	
 	
 	
-	public Any getClassSchedule(String studentId) {
+/*	public Any getClassSchedule(String studentId) {
 		Any retValue=orb.create_any();
 		System.out.println("before class schedule:"+recordDetails);
 		// TODO Auto-generated method stub
@@ -824,7 +824,7 @@ public class DCRSImpl {
 		retValue.insert_Value((Serializable)returnSchedule);
 
 		return retValue;
-	}
+	}*/
 
 	private HashMap<String, ArrayList<String>> commonGetClassSchedule(HashMap<String, ArrayList<String>> overallSchedule, String studentId,String d1,String d2) {
 
@@ -859,7 +859,7 @@ public class DCRSImpl {
 	}
 
 
-	public HashMap<String,ArrayList<String>> getClassSchedule1(String studentId){
+	public HashMap<String,ArrayList<String>> getClassSchedule(String studentId){
 		// TODO Auto-generated method stub
 		logManager.writeLog("REQUEST TYPE:getClassSchedule,Parameters:"+studentId);
 		//	System.out.println("Record details for the class:"+recordDetails);
@@ -911,7 +911,7 @@ public class DCRSImpl {
 	}
 
 	
-	public Any swapCourse(String studentID, String newCourseID, String oldCourseID) {
+	public SimpleEntry<Boolean, String>  swapCourse(String studentID, String newCourseID, String oldCourseID) {
 		// TODO Auto-generated method stub
 		logManager.writeLog("REQUEST TYPE:swapCourse,Parameters:"+studentID+","+newCourseID+","+oldCourseID);
 		SimpleEntry<Boolean, String> message =new SimpleEntry<Boolean, String>(true, "course swapped successfully");
@@ -930,7 +930,7 @@ public class DCRSImpl {
 					boolean dropResult=dropCourse(studentID, oldCourseID);
 					if(dropResult) {
 						//check if available space in new course
-						enrolment=enrolCourse(studentID, newCourseID, sem).extract_Value().toString();
+						enrolment=enrolCourse(studentID, newCourseID, sem).getValue();
 						//System.out.println("ENROLMENT STRING IS:"+enrolment);
 						if(enrolment!=null && enrolment.contains("success")) {
 							logManager.writeLog("course swapped successfully");	
@@ -953,9 +953,9 @@ public class DCRSImpl {
 
 		}
 
-		Any retValue=orb.create_any();
-		retValue.insert_Value( (java.io.Serializable) message);
-		return retValue;
+		//Any retValue=orb.create_any();
+		//retValue.insert_Value( (java.io.Serializable) message);
+		return message;
 	}
 
 	private boolean placeAvailableinNewCourse(String studentID, String newCourseID, String department2) {
