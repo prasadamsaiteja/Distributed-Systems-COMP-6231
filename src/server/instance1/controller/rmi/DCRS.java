@@ -1,22 +1,16 @@
 package server.instance1.controller.rmi;
 
-import java.io.Serializable;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.omg.CORBA.Any;
-import org.omg.CORBA.ORB;
-
 import generic.Logger;
-import generic.corbaInterface.IDCRSPOA;
 import server.instance1.controller.Helper;
 import server.instance1.controller.socket.UDPClient;
 import server.instance1.data.Database;
 
-public class DCRS extends IDCRSPOA {
+public class DCRS {
 		
-	@Override
 	public synchronized boolean addCourse(String adivsorId, String courseId, String semester, int capacity) {
 		
 		Database.Terms sem = Database.Terms.valueOf(semester.toUpperCase());
@@ -38,7 +32,7 @@ public class DCRS extends IDCRSPOA {
 		return true;
 	}
 
-	@Override
+
 	public synchronized boolean removeCourse(String adivsorId, String courseId, String semester) {
 		
 		Database.Terms sem = Database.Terms.valueOf(semester.toUpperCase());
@@ -55,21 +49,17 @@ public class DCRS extends IDCRSPOA {
 		
 	}
 
-	@Override
-	public synchronized Any listCourseAvailability(String advisorId, String semester) {
+	public synchronized HashMap<String, Integer> listCourseAvailability(String advisorId, String semester) {
 		
 		HashMap<String, Integer> result = Helper.listCourseAvailability(semester);
 		
 		result.putAll(UDPClient.getListCourseAvailability(semester));
 		Logger.listAvailableCourses(advisorId, semester, result);
 		
-		Any any = orb.create_any(); 		
-		any.insert_Value((Serializable) result);
-		return any;
+		return result;
 	}
 
-	@Override
-	public synchronized Any enrolCourse(String studentID, String courseId, String semester) {
+	public synchronized SimpleEntry<Boolean, String> enrolCourse(String studentID, String courseId, String semester) {
 
 		SimpleEntry<Boolean, String> result;
 		
@@ -77,24 +67,18 @@ public class DCRS extends IDCRSPOA {
 			result = Helper.enrolCourse(studentID, courseId, semester, true);
 		else
 			result = UDPClient.enrolCourse(studentID, courseId, semester);
-		
-		Any any = orb.create_any();
-		any.insert_Value((Serializable) result);		
-		return any;
+				
+		return result;
 	}
 
-	@Override
-	public synchronized Any getClassSchedule(String studentId) {
+	public synchronized HashMap<String, ArrayList<String>> getClassSchedule(String studentId) {
 
 		HashMap<String, ArrayList<String>> result = UDPClient.getClassSchedule(studentId);
 		Logger.getClassSchedule(studentId, result);
-
-		Any any = orb.create_any();
-		any.insert_Value((Serializable) result);		
-		return any;		
+		
+		return result;		
 	}
 
-	@Override
 	public synchronized boolean dropCourse(String studentId, String courseId) {
 		
 		if(courseId.startsWith(Database.getInstance().department))
@@ -104,16 +88,12 @@ public class DCRS extends IDCRSPOA {
 		
 	}
 
-	
-	@Override
-	public synchronized Any swapCourse(String studentId, String newCourseId, String oldCourseId) {
+	public synchronized SimpleEntry<Boolean, String> swapCourse(String studentId, String newCourseId, String oldCourseId) {
 		
 		SimpleEntry<Boolean, String> result = Helper.swapCourse(studentId, newCourseId, oldCourseId);
 		Logger.swapCourse(studentId, newCourseId, oldCourseId, result);
 		
-		Any any = orb.create_any(); 		
-		any.insert_Value((Serializable) result);
-		return any;
+		return result;
 	}
 
 }

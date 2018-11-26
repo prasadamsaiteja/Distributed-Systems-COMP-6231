@@ -62,12 +62,12 @@ public class UDPClient {
 		
 		try{
 			
-			for (Entry<String, SimpleEntry<Integer, Integer>> entry : Database.serverPorts.entrySet()) {
+			for (Entry<String, Integer> entry : Database.serverPorts.entrySet()) {
 				
 				if(entry.getKey().equals(Database.getInstance().department))
 					continue;
 				
-				byte[] result = sendRequest("ListCourseAvailability&" + semester, (entry.getValue()).getValue());
+				byte[] result = sendRequest("ListCourseAvailability&" + semester, entry.getValue());
 				
 				HashMap<String, Integer> temp = (HashMap<String, Integer>) byteArrayToObject(result);
 				response.putAll(temp);
@@ -85,12 +85,12 @@ public class UDPClient {
 		
 		try{
 			
-			for (Entry<String, SimpleEntry<Integer, Integer>> entry : Database.serverPorts.entrySet()) {
+			for (Entry<String, Integer> entry : Database.serverPorts.entrySet()) {
 				
 				if(!courseId.startsWith(entry.getKey()))
 					continue;
 								
-				byte[] response = sendRequest("EnrolCourse&" + studentID + "&" + courseId + "&" + semester, (entry.getValue()).getValue());
+				byte[] response = sendRequest("EnrolCourse&" + studentID + "&" + courseId + "&" + semester, entry.getValue());
 				result = (SimpleEntry<Boolean, String>) byteArrayToObject(response);
 
 			}
@@ -109,12 +109,12 @@ public class UDPClient {
 		
 		try{
 			
-			for (Entry<String, SimpleEntry<Integer, Integer>> entry : Database.serverPorts.entrySet()) {
+			for (Entry<String, Integer> entry : Database.serverPorts.entrySet()) {
 				
 				if(!courseId.startsWith(entry.getKey()))
 					continue;
 
-				byte[] response = sendRequest("DropCourse&" + studentId + "&" + courseId, (entry.getValue()).getValue());				
+				byte[] response = sendRequest("DropCourse&" + studentId + "&" + courseId, entry.getValue());				
 				result = (boolean) byteArrayToObject(response);
 
 			}
@@ -130,7 +130,7 @@ public class UDPClient {
 		
 		try{
 			
-			for (Entry<String, SimpleEntry<Integer, Integer>> entry : Database.serverPorts.entrySet()) {
+			for (Entry<String, Integer> entry : Database.serverPorts.entrySet()) {
 				
 				HashMap<String, ArrayList<String>> temp;
 				
@@ -138,7 +138,7 @@ public class UDPClient {
 					temp = Helper.getClassSchedule(studentId);
 				
 				else{								
-					byte[] response = sendRequest("ClassSchedule&" + studentId, (entry.getValue()).getValue());				
+					byte[] response = sendRequest("ClassSchedule&" + studentId, entry.getValue());				
 					temp = (HashMap<String, ArrayList<String>>) byteArrayToObject(response);
 				}
 				
@@ -166,7 +166,7 @@ public class UDPClient {
 		
 		try{
 			
-			for (Entry<String, SimpleEntry<Integer, Integer>> entry : Database.serverPorts.entrySet()) {
+			for (Entry<String, Integer> entry : Database.serverPorts.entrySet()) {
 				
 				SimpleEntry<Integer, Integer> temp;
 				
@@ -174,7 +174,7 @@ public class UDPClient {
 					temp = Helper.getCountOfEnrolledCourses(studentId, semester);
 					
 				else {
-					byte[] response = sendRequest("GetCountOfEnrolledCourses&" + studentId + "&" + semester, (entry.getValue()).getValue());				
+					byte[] response = sendRequest("GetCountOfEnrolledCourses&" + studentId + "&" + semester, entry.getValue());				
 					temp = (SimpleEntry<Integer, Integer>) byteArrayToObject(response);
 				}
 				

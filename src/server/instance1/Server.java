@@ -1,7 +1,5 @@
 package server.instance1;
 
-import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.util.Scanner;
 
 import generic.Logger;
@@ -10,7 +8,7 @@ import server.instance1.data.Database;
 
 public class Server{
 
-	public static void main(String[] args) throws  MalformedURLException, SocketException {
+	public static void main(String[] args) throws Exception {
 					
 		Database database = Database.getInstance();
 		Logger.isServer = true;

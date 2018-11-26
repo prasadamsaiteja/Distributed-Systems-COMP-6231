@@ -1,12 +1,13 @@
 package server.instance1.data;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
+
+import generic.Config;
 
 public class Database {
 
 	private static Database instance = null;	
-	public static HashMap<String, SimpleEntry<Integer, Integer>> serverPorts; 
+	public static HashMap<String, Integer> serverPorts; 
 		
 	public enum Terms {
 		FALL, WINTER, SUMMER
@@ -22,10 +23,17 @@ public class Database {
 		courses.put(Terms.FALL, new HashMap<>());
 		courses.put(Terms.SUMMER, new HashMap<>());
 		
-		serverPorts = new HashMap<>();
-		serverPorts.put("COMP", new SimpleEntry<Integer, Integer>(5026, 5326));
-		serverPorts.put("SOEN", new SimpleEntry<Integer, Integer>(5126, 5426));
-		serverPorts.put("INSE", new SimpleEntry<Integer, Integer>(5226, 5526));
+		try {
+			
+			serverPorts = new HashMap<>();
+			serverPorts.put("COMP", Config.getConfig("INSTANCE1_COMP_PORT"));
+			serverPorts.put("SOEN", Config.getConfig("INSTANCE1_SOEN_PORT"));
+			serverPorts.put("INSE", Config.getConfig("INSTANCE1_INSE_PORT"));
+			
+		} catch(Exception ex){
+			ex.printStackTrace();
+			System.exit(0);
+		}
 	}
 	
 	public static Database getInstance() {

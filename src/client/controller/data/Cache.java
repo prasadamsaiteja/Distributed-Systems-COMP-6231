@@ -1,25 +1,15 @@
 package client.controller.data;
 
-import java.util.HashMap;
-
 import generic.corbaInterface.IDCRS;
 
 public class Cache {
 
 	private static Cache instance = null;
-	public static HashMap<String, Integer> serverPorts;
 	
 	public IDCRS dcrs;
 	public String id;
 	public enum ClientType {
 		STUDENT, ADVISOR
-	}
-	
-	private Cache() {
-		serverPorts = new HashMap<>();
-		serverPorts.put("COMP", 5026);
-		serverPorts.put("SOEN", 5126);
-		serverPorts.put("INSE", 5226);
 	}
 	
 	public static Cache getInstance() {

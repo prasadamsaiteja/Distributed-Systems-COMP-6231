@@ -20,7 +20,7 @@ public class UDPServer extends Thread {
 	
 	public UDPServer() throws SocketException{
 		String department = Database.getInstance().department;
-		socket = new DatagramSocket(Database.serverPorts.get(department).getValue());
+		socket = new DatagramSocket(Database.serverPorts.get(department));
 	}
 	
 	public void run() {
@@ -32,7 +32,7 @@ public class UDPServer extends Thread {
 				DatagramPacket requestPacket = new DatagramPacket(receivedBuffer, receivedBuffer.length);
 				socket.receive(requestPacket);
 
-	            String request = new String(requestPacket.getData(), 0, requestPacket.getLength());	                
+	            String request = new String(requestPacket.getData(), 0, requestPacket.getLength());      
 	            byte[] responseBuffer = processRequest(request);
 
 	            DatagramPacket replyPacket = new DatagramPacket(responseBuffer, responseBuffer.length, requestPacket.getAddress(), requestPacket.getPort());
