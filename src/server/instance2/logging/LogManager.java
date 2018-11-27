@@ -1,4 +1,4 @@
-package server.instance2.Logging;
+package server.instance2.logging;
 
 import java.io.IOException;
 import java.util.logging.FileHandler;

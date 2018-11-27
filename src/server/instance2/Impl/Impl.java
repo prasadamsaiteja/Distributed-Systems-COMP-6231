@@ -14,7 +14,7 @@ import javax.jws.WebService;
 import generic.Config;
 import generic.UDPUtilities;
 import server.instance2.Interface.Addition;
-import server.instance2.Logging.LogManager;
+import server.instance2.logging.LogManager;
 
 
 @WebService(endpointInterface = "Interface.Addition")

@@ -126,12 +126,6 @@ public class FrontEndUtitlies {
 			HashMap<String, Integer> temp1 = (HashMap<String, Integer>) majorityReply;
 			HashMap<String, Integer> temp2 = (HashMap<String, Integer>) currentPacketObject;
 			
-			System.out.println(temp1.keySet());
-			System.out.println(temp1.values());
-			
-			System.out.println(temp2.keySet());
-			System.out.println(temp2.values());
-			
 			return temp1.equals(temp2);	
 			
 		}

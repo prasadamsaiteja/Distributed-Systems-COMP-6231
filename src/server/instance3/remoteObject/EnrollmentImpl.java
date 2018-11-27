@@ -26,6 +26,7 @@ import generic.Config;
 import generic.UDPUtilities;
 import server.instance3.util.Constants;
 import server.instance3.util.Department;
+import server.instance3.util.Semester;
 import server.instance3.util.Utils;
 
 /**
@@ -375,9 +376,9 @@ public class EnrollmentImpl implements EnrollmentInterface {
 			});
 		});
 		
-		for(Department dept : Department.values()) {
-			if(!schedule.containsKey(dept.toString())){
-				schedule.put(dept.toString(),new ArrayList<String>());
+		for(Semester semester : Semester.values()) {
+			if(!schedule.containsKey(semester.name())){
+				schedule.put(semester.name(),new ArrayList<String>());
 			}
 		}
 		
