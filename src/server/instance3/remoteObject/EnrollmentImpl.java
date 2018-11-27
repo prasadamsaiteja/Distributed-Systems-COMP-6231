@@ -374,6 +374,13 @@ public class EnrollmentImpl implements EnrollmentInterface {
 				}
 			});
 		});
+		
+		for(Department dept : Department.values()) {
+			if(!schedule.containsKey(dept.toString())){
+				schedule.put(dept.toString(),new ArrayList<String>());
+			}
+		}
+		
 		rl.unlock();
 		return schedule;
 	}
