@@ -43,3 +43,91 @@ COMP6161 => 1,
 [13:45:25 27/11/2018] [Add Course] [Successfull] COMP6162 successfully added to FALL semester, by COMPA1931
 [13:45:35 27/11/2018] [Enrol Course] [Successfull] COMPS1564 has enrolled into course COMP6162 for FALL semester 
 
+[14:44:07 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[14:44:16 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[14:55:14 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[14:55:32 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[14:59:01 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[14:59:08 27/11/2018] [Remove Course] [Successfull] COMP6161 successfully removed from FALL semester, by COMPA1931
+[14:59:14 27/11/2018] [Add Course] [Successfull] COMP6162 successfully added to FALL semester, by COMPA1931
+[15:01:24 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:01:33 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:02:58 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:03:09 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:05:36 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:05:45 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:07:05 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:07:12 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:08:57 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:09:05 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:16:27 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:16:35 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:25:42 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:25:49 27/11/2018] [Remove Course] [Successfull] COMP6161 successfully removed from FALL semester, by COMPA1931
+[15:26:02 27/11/2018] [Add Course] [Successfull] COMP6162 successfully added to FALL semester, by COMPA1931
+[15:29:12 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:29:16 27/11/2018] [Remove Course] [Successfull] COMP6161 successfully removed from FALL semester, by COMPA1931
+[15:29:22 27/11/2018] [Add Course] [Successfull] COMP6162 successfully added to FALL semester, by COMPA1931
+[15:33:29 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:33:34 27/11/2018] [Remove Course] [Successfull] COMP6161 successfully removed from FALL semester, by COMPA1931
+[15:33:40 27/11/2018] [Add Course] [Successfull] COMP6162 successfully added to FALL semester, by COMPA1931
+[15:34:02 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6162 => 1, 
+[15:35:17 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:35:19 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[15:36:38 27/11/2018] [Add Course] [Failed] COMP6161 failed to add to FALL semester, by COMPA1931 as it is already exists
+[15:37:16 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:37:39 27/11/2018] [Drop Course] [Successfull] COMPS1931 has been successfully dropped from course COMP6161 
+
+[15:38:15 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:38:22 27/11/2018] [Add Course] [Successfull] COMP6162 successfully added to FALL semester, by COMPA1931
+[15:38:37 27/11/2018] [Drop Course] [Successfull] COMPS1931 has been successfully dropped from course COMP6161 
+
+[15:38:37 27/11/2018] [Swap Course] [Successfull] COMPS1931 has successfully swapped course from COMP6161 to COMP6162
+[15:39:22 27/11/2018] [Class Schedule] [Successfull] COMPS1931 has requested class schedule 
+WINTER: None
+FALL: COMP6162, 
+SUMMER: None
+
+[15:40:36 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:40:40 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[15:51:41 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:51:44 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[15:52:38 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:52:41 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[15:54:32 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+
+[15:54:44 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[15:54:48 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[15:55:33 27/11/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[15:55:37 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 0, 
+[15:55:53 27/11/2018] [Class Schedule] [Successfull] COMPS1931 has requested class schedule 
+WINTER: None
+FALL: COMP6161, 
+SUMMER: None
+
+[16:00:54 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[16:00:57 27/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[16:01:14 27/11/2018] [Class Schedule] [Successfull] COMPS1931 has requested class schedule 
+WINTER: None
+FALL: None
+SUMMER: None
+

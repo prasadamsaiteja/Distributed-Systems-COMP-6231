@@ -104,7 +104,7 @@ public class UDPServer extends Thread {
 		
 		String[] temp = receivedRequest.split("&", 2);
 		//int sequenceNumber = Integer.parseInt(temp[0]);
-		String request[] = temp[1].split("&");
+		String request[] = temp[1].trim().split("&");
 		byte[] response = new byte[1000];
 		
 		switch(request[0]){
