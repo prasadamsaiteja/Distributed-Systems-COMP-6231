@@ -27,10 +27,10 @@ public class UDPServer extends Thread {
 	}
 	
 	public void run() {
-		
-		do{
-			try {
 				
+		try {
+			
+			do{		
 				byte[] receivedBuffer = new byte[1000];
 				DatagramPacket requestPacket = new DatagramPacket(receivedBuffer, receivedBuffer.length);
 				socket.receive(requestPacket);
@@ -42,11 +42,15 @@ public class UDPServer extends Thread {
 
 	            DatagramPacket replyPacket = new DatagramPacket(responseBuffer, responseBuffer.length, requestPacket.getAddress(), requestPacket.getPort());
 	            socket.send(replyPacket);
-	            
-			} catch (IOException exception) { exception.printStackTrace(); }
-			
-		} while(true);
-		
+	    
+			} while(true);
+
+		} catch (IOException exception) { exception.printStackTrace(); }
+		finally {
+			if (socket != null)
+				socket.close();
+		}
+				
 	}
 	
 	private byte[] processRequest(String receivedRequest) {

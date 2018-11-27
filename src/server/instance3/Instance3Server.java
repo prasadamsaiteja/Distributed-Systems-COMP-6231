@@ -4,7 +4,7 @@
 * Professor - Rajagopalan Jayakumar
 * Software Failure Tolerant and Highly Available Distributed Course Registration System (DCRS)
 */
-package server.instance3.server;
+package server.instance3;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import server.instance3.util.Department;
  * @see <a href='https://www.linkedin.com/in/imamanrana/' target=
  *      "_blank">Profile</a>
  */
-public class Server {
+public class Instance3Server {
 
 	private static EnrollmentInterface compServer;
 	private static EnrollmentInterface soenServer;
@@ -32,6 +32,8 @@ public class Server {
 		getInstance("COMP");
 		getInstance("SOEN");
 		getInstance("INSE");
+		
+		System.out.println("Insance3 Server initated");
 	}
 	
 	public static EnrollmentInterface getInstance(String serverName) throws IOException {

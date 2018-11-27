@@ -3,7 +3,7 @@ package server.instance1;
 import generic.Logger;
 import server.instance1.controller.socket.UDPServer;
 
-public class Server{
+public class Instance1Server{
 
 	public static void main(String[] args) throws Exception {
 					
@@ -21,7 +21,7 @@ public class Server{
 	    inseUDPServer.setName("INSE");
 	    inseUDPServer.start();
 		
-		System.out.println("Server initated");
+		System.out.println("Insance1 Server initated");
 	}
 
 }

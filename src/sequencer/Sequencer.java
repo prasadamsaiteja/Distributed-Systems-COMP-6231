@@ -34,6 +34,8 @@ public class Sequencer extends Thread {
 				
 		} catch(Exception e) {
 			e.printStackTrace();
+		} finally{
+			if(datagramSocket != null) datagramSocket.close();
 		}
 	}
 		

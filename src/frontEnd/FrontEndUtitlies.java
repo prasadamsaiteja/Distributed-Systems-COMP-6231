@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketTimeoutException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -30,68 +32,121 @@ public class FrontEndUtitlies {
 			InetAddress sequencerIP = InetAddress.getByName(Config.getStringConfig("SEQUENCER_IP"));
 			DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length, sequencerIP, Config.getConfig("SEQUENCER_PORT"));
 			socket.send(requestPacket);		
-			System.out.println("Request sent to sequencer");
+			System.out.println("\nRequest sent to sequencer");
 			
 		} catch(Exception ex){
 			ex.printStackTrace();
 		}
 
-		try{
+		ArrayList<DatagramPacket> responses = receiveReplies();
+		if(UDPUtilities.byteArrayToObject(responses.get(0).getData()) instanceof Boolean)
+			return getMajorityOfRepliesBoolean(responses, Boolean.class);
+		
+		if(UDPUtilities.byteArrayToObject(responses.get(0).getData()) instanceof SimpleEntry)
+			return getMajorityOfRepliesBoolean(responses, SimpleEntry.class);
+		
+		return null;
+	}
+	
+	private static <T> Object getMajorityOfRepliesBoolean(ArrayList<DatagramPacket> responses, Class<T> type) {
+		
+		T instance1, instance2, instance3;
+		T majorityReply = null;
+		int majorityReplyCounter = 0;
+		
+		try {
 			
-			/*ExecutorService executor = Executors.newSingleThreadExecutor();
-
-			@SuppressWarnings("unchecked")
-			Future<Object> handler = executor.submit(new Callable() {
-			    @Override
-			    public Object call() throws IOException {
-			        
-			    	int replyReceived = 0;
-			    	Object instance1 = null, instance2 = null, instance3 = null;
-			    	
-			    	while(replyReceived < 1) {
-						
-						DatagramPacket replyPacket = receiveReply();
-						
-						if(replyPacket.getPort() == getPort(1, "COMP") || replyPacket.getPort() == getPort(1, "SOEN") || replyPacket.getPort() == getPort(1, "INSE")) {
-							instance1 = UDPUtilities.byteArrayToObject(replyPacket.getData());
-							System.out.println("Reply received from instance 1");
-							replyReceived++;
-						}
-											
-						else if(replyPacket.getPort() == getPort(2, "COMP") || replyPacket.getPort() == getPort(2, "SOEN") || replyPacket.getPort() == getPort(2, "INSE")) {
-							instance2 = UDPUtilities.byteArrayToObject(replyPacket.getData());
-							System.out.println("Reply received from instance 2");
-							replyReceived++;
-						}
-						
-						else if(replyPacket.getPort() == getPort(3, "COMP") || replyPacket.getPort() == getPort(3, "SOEN") || replyPacket.getPort() == getPort(3, "INSE")) {
-							instance3 = UDPUtilities.byteArrayToObject(replyPacket.getData());
-							System.out.println("Reply received from instance 3");
-							replyReceived++;
-						}
-
-					}
-			    	
-			    	return instance1;		    	
-			    }
-
-			});
+			for (DatagramPacket datagramPacket : responses) {
+				
+				T currentPacketObject = (T) UDPUtilities.byteArrayToObject(datagramPacket.getData());
+				
+				if(majorityReplyCounter == 0){					
+					majorityReply = currentPacketObject;
+					majorityReplyCounter++;	
+				} else if(equals(majorityReply, currentPacketObject)) {			
+					majorityReplyCounter++;
+				} else{
+					majorityReplyCounter--;
+				}
+									
+				if(datagramPacket.getPort() == getPort(1, "COMP") || datagramPacket.getPort() == getPort(1, "SOEN") || datagramPacket.getPort() == getPort(1, "INSE")) {
+					instance1 = currentPacketObject;
+					System.out.println("Reply received from instance 1");
+				}
+									
+				else if(datagramPacket.getPort() == getPort(2, "COMP") || datagramPacket.getPort() == getPort(2, "SOEN") || datagramPacket.getPort() == getPort(2, "INSE")) {
+					instance2 = currentPacketObject;
+					System.out.println("Reply received from instance 2");
+				}
+	
+				else if(datagramPacket.getPort() == getPort(3, "COMP") || datagramPacket.getPort() == getPort(3, "SOEN") || datagramPacket.getPort() == getPort(3, "INSE")) {
+					instance3 = currentPacketObject;
+					System.out.println("Reply received from instance 3");
+				}
+				
+			}
 			
-			return handler.get(2, TimeUnit.SECONDS);*/
-			return UDPUtilities.byteArrayToObject(responses.get(0).getData());
+			if(majorityReplyCounter == responses.size()) {
+				System.out.println("Response sent to client");
+				return majorityReply;
+			}
 			
-		} catch (SocketTimeoutException e) {
-			System.out.println("hardware failure");
-			return null;
+			else{
+				System.out.println("There is a software issue: " + majorityReplyCounter);
+				System.out.println("Response sent to client");
+				return majorityReply;
+			}
+				
 		} catch(Exception ex) {
 			ex.printStackTrace();
 			return null;
 		}
-		
+				
 	}
-	
-	private static int getPort(int instance, String departmentName) throws FileNotFoundException, IOException {		
-		return Config.getConfig("INSTANCE" + instance + "_" + departmentName + "_PORT");
+
+	@SuppressWarnings("unchecked")
+	private static <T> boolean equals(T majorityReply, T currentPacketObject) {
+		
+		if(majorityReply instanceof Boolean)
+			return (boolean) majorityReply == (boolean) currentPacketObject;
+		
+		else if(majorityReply instanceof SimpleEntry)
+			return (SimpleEntry<Boolean, String>) majorityReply == (SimpleEntry<Boolean, String>) currentPacketObject;
+		
+		return false;
+	}
+
+	private static ArrayList<DatagramPacket> receiveReplies() {
+		
+		ArrayList<DatagramPacket> replies = new ArrayList<>();		
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+
+		@SuppressWarnings("unchecked")
+		Future<ArrayList<DatagramPacket>> handler = executor.submit(new Callable() {
+		    @Override
+		    public ArrayList<DatagramPacket> call() throws IOException {
+		        
+		    	int replyReceived = 0;
+		    	
+		    	while(replyReceived < 2) {						
+					DatagramPacket replyPacket = receiveReply();
+					replies.add(replyPacket);					
+					replyReceived++;
+				}
+		    	
+		    	return replies;
+		    }
+
+		});
+		
+		try {			
+			return handler.get(2, TimeUnit.SECONDS);
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			System.out.println("hardware failure");
+			//Let know of hardware failure
+			return replies; //Other instances replies
+		}
+				
 	}
 	
 	private static DatagramPacket receiveReply() throws IOException {
@@ -101,6 +156,10 @@ public class FrontEndUtitlies {
 		FrontEnd.datagramSocket.receive(replyPacket);		
 		return replyPacket;
 		
+	}
+	
+	private static int getPort(int instance, String departmentName) throws FileNotFoundException, IOException {		
+		return Config.getConfig("INSTANCE" + instance + "_" + departmentName + "_PORT");
 	}
 	
 }
