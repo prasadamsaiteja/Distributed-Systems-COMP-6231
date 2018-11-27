@@ -1,14 +1,9 @@
 package server.instance2;
 
-
-import generic.corbaInterface.IDCRSPOA;
 import server.instance2.logging.LogManager;
 
-import org.omg.CORBA.*;
-
-
 import java.io.IOException;
-import java.io.Serializable;
+
 import java.rmi.RemoteException;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -41,11 +36,7 @@ public class DCRSImpl {
 
 		return recordDetails;
 	}
-	private ORB orb;
-
-	public void setORB(ORB orb_val) {
-		orb = orb_val; 
-	}
+	
 
 	// implement add() method
 	public int add(int a, int b) {
@@ -53,11 +44,7 @@ public class DCRSImpl {
 		return r;
 	}
 
-	// implement shutdown() method
-	public void shutdown() {
-		orb.shutdown(false);
-	}
-
+	
 	
 	public boolean addCourse(String courseID, String semester, String capacity) {
 		logManager.writeLog("REQUEST TYPE:addcourse"+"parameters:"+courseID+","+semester+","+capacity);
@@ -830,11 +817,7 @@ public class DCRSImpl {
 
 
 		overallSchedule=new HashMap<>();
-		HashMap<String,ArrayList<String>> commonSchedule=new HashMap<>();
-		//	String status="Failure";
-		ArrayList<String> fallList=new ArrayList<String>();
-		ArrayList<String> winterList=new ArrayList<String>();
-		ArrayList<String> summerList=new ArrayList<String>();
+	
 		String dummy="classschedule"+":"+studentId;
 		UDPClient udpClient=new UDPClient();
 		String response1=new String();
@@ -845,15 +828,10 @@ public class DCRSImpl {
 		response2=udpClient.udpRequest(d1, dummy);
 		System.out.println("res2:"+response2);
 		//	System.out.println("RESPONSE from SOEN schedule:"+response2);
-		String response3=new String();
-		response3=udpClient.udpRequest(d2, dummy);
-		System.out.println("res3:"+response3);
-		HashMap<String,ArrayList<String>> res1Map=scheduleUtility(response1, overallSchedule,fallList,winterList,summerList);
-
-		HashMap<String,ArrayList<String>> res2Map=scheduleUtility(response2, overallSchedule,fallList,winterList,summerList);
-		HashMap<String,ArrayList<String>> res3Map=scheduleUtility(response3, overallSchedule,fallList,winterList,summerList);
-
-		System.out.println("what happens now?"+overallSchedule);
+		/*String response3=new String();
+		Sresponse3=udpClient.udpRequest(d2, dummy);*/
+	
+		
 
 		return overallSchedule;
 	}
