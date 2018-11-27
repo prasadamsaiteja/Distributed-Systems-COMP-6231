@@ -27,6 +27,13 @@ public class Server {
 	private static EnrollmentInterface soenServer;
 	private static EnrollmentInterface inseServer;
 
+	
+	public static void main(String[] args) throws IOException {
+		getInstance("COMP");
+		getInstance("SOEN");
+		getInstance("INSE");
+	}
+	
 	public static EnrollmentInterface getInstance(String serverName) throws IOException {
 
 		if (serverName.equalsIgnoreCase("COMP")) {
