@@ -137,7 +137,8 @@ public class UDPServer extends Thread {
 		
 		try {
 			
-			DatagramPacket replyPacket = new DatagramPacket(response, response.length, InetAddress.getByName("localhost"), Config.getConfig("FRONTEND_PORT"));
+			InetAddress serverIP = InetAddress.getByName(Config.getStringConfig("FRONTEND_IP"));
+			DatagramPacket replyPacket = new DatagramPacket(response, response.length, serverIP, Config.getConfig("FRONTEND_PORT"));
 	        socket.send(replyPacket);
 	        
 		} catch(Exception ex){

@@ -19,4 +19,14 @@ public class Config {
 		return Integer.parseInt(properties.getProperty(variable));
 	}
 	
+	public static String getStringConfig(String variable) throws FileNotFoundException, IOException {
+		
+		if(properties == null){
+			 properties = new Properties();
+			 properties.load(new FileInputStream("app.config"));
+		}
+		
+		return properties.getProperty(variable);
+	}
+	
 }
