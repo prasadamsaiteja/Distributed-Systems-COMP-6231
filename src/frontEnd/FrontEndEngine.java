@@ -1,78 +1,149 @@
 package frontEnd;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.StringJoiner;
+import java.util.AbstractMap.SimpleEntry;
+
+import org.omg.CORBA.Any;
 import org.omg.CORBA.ORB;
-import org.omg.CosNaming.NameComponent;
-import org.omg.CosNaming.NamingContextExt;
-import org.omg.CosNaming.NamingContextExtHelper;
-import org.omg.PortableServer.POA;
-import org.omg.PortableServer.POAHelper;
 
-import generic.corbaInterface.IDCRS;
-import generic.corbaInterface.IDCRSHelper;
+import generic.corbaInterface.IDCRSPOA;
 
-public class FrontEndEngine {
+public class FrontEndEngine extends IDCRSPOA {
+	
+	private ORB orb;
+	private String server;
 
-	public static void main(String[] args) {
-		
-		Thread comp = new Thread(new FrontEndThread(args, "COMP"));
-		Thread soen = new Thread(new FrontEndThread(args, "SOEN"));
-		Thread inse = new Thread(new FrontEndThread(args, "INSE"));
-		
-		comp.start();
-		soen.start();
-		inse.start();
-		
-		System.out.println("Front End Started");
-		
+	public FrontEndEngine(String server) {
+		super();
+		this.server = server;
 	}
 	
-	public static class FrontEndThread implements Runnable {
-
-		private String[] args;
-		private String serverName;
-		
-		public FrontEndThread(String[] args, String serverName){
-			this.args = args;
-			this.serverName = serverName;
-		}
-		
-		@Override
-		public void run() {
-			initFrontEndEngine(args, serverName);
-		}
-		
+	public void setORB(ORB orb) {
+		this.orb = orb;
 	}
 	
-	public static void initFrontEndEngine(String[] args, String serverName) {
-		
-		try{
-			ORB orb = ORB.init(args, null);      
-		    POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-		    rootpoa.the_POAManager().activate();
-		 
-		    // create servant and register it with the ORB
-		    FrontEnd frontEnd = new FrontEnd(serverName);
-		    frontEnd.setORB(orb); 
-		 
-		    // get object reference from the servant
-		    org.omg.CORBA.Object ref = rootpoa.servant_to_reference(frontEnd);
-		    IDCRS href = IDCRSHelper.narrow(ref);
-		 
-		    org.omg.CORBA.Object objRef =  orb.resolve_initial_references("NameService");
-		    NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
-		 
-		    NameComponent path[] = ncRef.to_name(serverName);
-		    ncRef.rebind(path, href);
-		 
-		    // wait for invocations from clients
-		    for (;;) { orb.run(); }
-		    
-		}
-		
-		catch(Exception ex){
-			ex.printStackTrace();
-		}
-		
+	public void shutdown() {
+		orb.shutdown(false);
 	}
+
+	@Override
+	public boolean addCourse(String advisorId, String courseId, String semester, int capacity) {
+		
+		StringJoiner joiner = new StringJoiner("&")
+				.add(server)
+				.add("addCourse")
+				.add(advisorId)
+				.add(courseId)
+				.add(semester)
+				.add(String.valueOf(capacity));
+		
+		String message = joiner.toString();		
+		Object result = FrontEndUtitlies.sendUDPRequest(message);
+				
+		return (boolean) result;
+	}
+
+	@Override
+	public boolean removeCourse(String advisorId, String courseId, String semester) {
+
+		StringJoiner joiner = new StringJoiner("&")
+				.add(server)
+				.add("removeCourse")
+				.add(advisorId)
+				.add(courseId)
+				.add(semester);
+		
+		String message = joiner.toString();		
+		Object result = FrontEndUtitlies.sendUDPRequest(message);
+		
+		return (boolean) result;
+	}
+
+	@Override
+	public Any listCourseAvailability(String advisorId, String semester) {
+
+		StringJoiner joiner = new StringJoiner("&")
+				.add(server)
+				.add("listCourseAvailability")
+				.add(advisorId)
+				.add(semester);
+		
+		String message = joiner.toString();		
+		HashMap<String, Integer> result = (HashMap<String, Integer>) FrontEndUtitlies.sendUDPRequest(message); 
+		
+		Any any = orb.create_any();
+		any.insert_Value((Serializable) result);	
+		return any;
+	}
+
+	@Override
+	public Any enrolCourse(String studentId, String courseId, String semester) {
+		
+		StringJoiner joiner = new StringJoiner("&")
+				.add(server)
+				.add("enrolCourse")
+				.add(studentId)
+				.add(courseId)
+				.add(semester);
+		
+		String message = joiner.toString();		
+		SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) FrontEndUtitlies.sendUDPRequest(message);
+		
+		Any any = orb.create_any();
+		any.insert_Value((Serializable) result);	
+		return any;
+	}
+
+	@Override
+	public Any getClassSchedule(String studentId) {
+
+		StringJoiner joiner = new StringJoiner("&")
+				.add(server)
+				.add("getClassSchedule")
+				.add(studentId);
+		
+		String message = joiner.toString();		
+		HashMap<String, ArrayList<String>> result = (HashMap<String, ArrayList<String>>) FrontEndUtitlies.sendUDPRequest(message);
+		
+		Any any = orb.create_any();
+		any.insert_Value((Serializable) result);	
+		return any;
+	}
+
+	@Override
+	public boolean dropCourse(String studentId, String courseId) {
+		
+		StringJoiner joiner = new StringJoiner("&")
+				.add(server)
+				.add("dropCourse")
+				.add(studentId)
+				.add(courseId);
+		
+		String message = joiner.toString();		
+		Object result = FrontEndUtitlies.sendUDPRequest(message);
+		
+		return (boolean) result;
+	}
+
+	@Override
+	public Any swapCourse(String studentId, String newCourseId, String oldCourseId) {
+
+		StringJoiner joiner = new StringJoiner("&")
+				.add(server)
+				.add("swapCourse")
+				.add(studentId)
+				.add(newCourseId)
+				.add(oldCourseId);
+		
+		String message = joiner.toString();		
+		SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) FrontEndUtitlies.sendUDPRequest(message);
+		
+		Any any = orb.create_any();
+		any.insert_Value((Serializable) result);	
+		return any;
+	}	
 	
 }

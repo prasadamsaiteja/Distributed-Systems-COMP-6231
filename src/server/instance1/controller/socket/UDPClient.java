@@ -1,8 +1,5 @@
 package server.instance1.controller.socket;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -11,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import generic.UDPUtilities;
 import server.instance1.controller.Helper;
 import server.instance1.data.Database;
 
@@ -39,23 +37,6 @@ public class UDPClient {
 		return null;
 	}
 	
-	public static Object byteArrayToObject(byte[] data){
-		     
-		  try {
-			  
-			  ByteArrayInputStream byteIn = new ByteArrayInputStream(data);
-			  ObjectInputStream in = new ObjectInputStream(byteIn);
-			  Object result = (Object) in.readObject();
-			  return result;
-			  
-		  } catch (IOException | ClassNotFoundException e) {
-			  e.printStackTrace();
-		  }
-		     
-		  return null;
-	 }
-
-	
 	public static HashMap<String, Integer> getListCourseAvailability(String semester) {
 		
 		HashMap<String, Integer> response = new HashMap<>();
@@ -69,7 +50,7 @@ public class UDPClient {
 				
 				byte[] result = sendRequest("ListCourseAvailability&" + semester, entry.getValue());
 				
-				HashMap<String, Integer> temp = (HashMap<String, Integer>) byteArrayToObject(result);
+				HashMap<String, Integer> temp = (HashMap<String, Integer>) UDPUtilities.byteArrayToObject(result);
 				response.putAll(temp);
 
 			}
@@ -91,7 +72,7 @@ public class UDPClient {
 					continue;
 								
 				byte[] response = sendRequest("EnrolCourse&" + studentID + "&" + courseId + "&" + semester, entry.getValue());
-				result = (SimpleEntry<Boolean, String>) byteArrayToObject(response);
+				result = (SimpleEntry<Boolean, String>) UDPUtilities.byteArrayToObject(response);
 
 			}
 			
@@ -115,7 +96,7 @@ public class UDPClient {
 					continue;
 
 				byte[] response = sendRequest("DropCourse&" + studentId + "&" + courseId, entry.getValue());				
-				result = (boolean) byteArrayToObject(response);
+				result = (boolean) UDPUtilities.byteArrayToObject(response);
 
 			}
 			
@@ -139,7 +120,7 @@ public class UDPClient {
 				
 				else{								
 					byte[] response = sendRequest("ClassSchedule&" + studentId, entry.getValue());				
-					temp = (HashMap<String, ArrayList<String>>) byteArrayToObject(response);
+					temp = (HashMap<String, ArrayList<String>>) UDPUtilities.byteArrayToObject(response);
 				}
 				
 				for (Entry<String, ArrayList<String>> temp2: temp.entrySet()) {
@@ -175,7 +156,7 @@ public class UDPClient {
 					
 				else {
 					byte[] response = sendRequest("GetCountOfEnrolledCourses&" + studentId + "&" + semester, entry.getValue());				
-					temp = (SimpleEntry<Integer, Integer>) byteArrayToObject(response);
+					temp = (SimpleEntry<Integer, Integer>) UDPUtilities.byteArrayToObject(response);
 				}
 				
 				result = new SimpleEntry<Integer, Integer>(result.getKey() + temp.getKey(), result.getValue() + temp.getValue());

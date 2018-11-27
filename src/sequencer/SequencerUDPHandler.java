@@ -18,7 +18,7 @@ public class SequencerUDPHandler {
 		
 		String[] requestParts = request.split("&", 2);
 		this.serverName = requestParts[0];
-		this.request = "SEQUENCER&" + sequenceNumber + "&" + this.request;
+		this.request = "SEQUENCER&" + sequenceNumber + "&" + requestParts[1];
 	}
 	
 	public void sendToReplica() {

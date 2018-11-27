@@ -11,7 +11,7 @@ import server.instance1.data.Database;
 
 public class DCRS {
 		
-	public synchronized boolean addCourse(String adivsorId, String courseId, String semester, int capacity) {
+	public static synchronized boolean addCourse(String adivsorId, String courseId, String semester, int capacity) {
 		
 		Database.Terms sem = Database.Terms.valueOf(semester.toUpperCase());
 		Database databaseInstance = Database.getInstance();
@@ -32,8 +32,7 @@ public class DCRS {
 		return true;
 	}
 
-
-	public synchronized boolean removeCourse(String adivsorId, String courseId, String semester) {
+	public static synchronized boolean removeCourse(String adivsorId, String courseId, String semester) {
 		
 		Database.Terms sem = Database.Terms.valueOf(semester.toUpperCase());
 		Database databaseInstance = Database.getInstance();
@@ -49,7 +48,7 @@ public class DCRS {
 		
 	}
 
-	public synchronized HashMap<String, Integer> listCourseAvailability(String advisorId, String semester) {
+	public static synchronized HashMap<String, Integer> listCourseAvailability(String advisorId, String semester) {
 		
 		HashMap<String, Integer> result = Helper.listCourseAvailability(semester);
 		
@@ -59,7 +58,7 @@ public class DCRS {
 		return result;
 	}
 
-	public synchronized SimpleEntry<Boolean, String> enrolCourse(String studentID, String courseId, String semester) {
+	public static synchronized SimpleEntry<Boolean, String> enrolCourse(String studentID, String courseId, String semester) {
 
 		SimpleEntry<Boolean, String> result;
 		
@@ -71,7 +70,7 @@ public class DCRS {
 		return result;
 	}
 
-	public synchronized HashMap<String, ArrayList<String>> getClassSchedule(String studentId) {
+	public static synchronized HashMap<String, ArrayList<String>> getClassSchedule(String studentId) {
 
 		HashMap<String, ArrayList<String>> result = UDPClient.getClassSchedule(studentId);
 		Logger.getClassSchedule(studentId, result);
@@ -79,7 +78,7 @@ public class DCRS {
 		return result;		
 	}
 
-	public synchronized boolean dropCourse(String studentId, String courseId) {
+	public static synchronized boolean dropCourse(String studentId, String courseId) {
 		
 		if(courseId.startsWith(Database.getInstance().department))
 			return Helper.dropCourse(studentId, courseId);
@@ -88,7 +87,7 @@ public class DCRS {
 		
 	}
 
-	public synchronized SimpleEntry<Boolean, String> swapCourse(String studentId, String newCourseId, String oldCourseId) {
+	public static synchronized SimpleEntry<Boolean, String> swapCourse(String studentId, String newCourseId, String oldCourseId) {
 		
 		SimpleEntry<Boolean, String> result = Helper.swapCourse(studentId, newCourseId, oldCourseId);
 		Logger.swapCourse(studentId, newCourseId, oldCourseId, result);
