@@ -383,7 +383,7 @@ public class Impl implements Addition{
 						//check if available space in new course
 						enrolment=enrolCourse(studentID, newCourseID, sem).getValue().toString();
 						if(enrolment!=null && enrolment.equalsIgnoreCase("success")) {
-						//	logManager.writeLog("course swapped successfully");	
+							logManager.writeLog("course swapped successfully");	
 							message =new SimpleEntry<Boolean, String>(true, "course swapped successfully");
 						//	message="course swapped successfully";
 						}else {
@@ -448,7 +448,7 @@ public class Impl implements Addition{
 					System.out.println("count for d3:"+checkCount);
 					othrCount+=Integer.parseInt(checkCount);
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -469,7 +469,7 @@ public class Impl implements Addition{
 			//response1=udpClient.udpRequest(d3.toUpperCase(), dummy);
 				try {
 					response1= (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT(d2.toUpperCase()))));
-				} catch (IOException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -495,7 +495,7 @@ public class Impl implements Addition{
 					System.out.println("count for d3:"+checkCount);
 					othrCount+=Integer.parseInt(checkCount);
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -516,7 +516,7 @@ public class Impl implements Addition{
 			//response1=udpClient.udpRequest(d3.toUpperCase(), dummy);
 				try {
 					response1= (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT(d3.toUpperCase()))));
-				} catch (IOException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -957,7 +957,7 @@ public class Impl implements Addition{
 				//		System.out.println("CAPACITY..."+capacity);			
 				availableCourseList.put(subjectId,Integer.parseInt(capacity.trim()));
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
