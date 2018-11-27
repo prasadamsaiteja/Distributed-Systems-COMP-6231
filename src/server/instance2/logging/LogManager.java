@@ -1,4 +1,4 @@
-package server.instance2.logging;
+package server.instance2.Logging;
 
 import java.io.File;
 import java.io.IOException;

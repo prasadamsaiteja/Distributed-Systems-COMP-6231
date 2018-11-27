@@ -1,53 +1,49 @@
-package server.instance2;
+package server.instance2.Impl;
 
-import server.instance2.logging.LogManager;
-
-import java.io.IOException;
-
-import java.rmi.RemoteException;
-
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
- 
-public class DCRSImpl {
 
-	private server.instance2.logging.LogManager logManager = null;
+import javax.jws.WebService;
+
+import generic.Config;
+import generic.UDPUtilities;
+import server.instance2.Interface.Addition;
+import server.instance2.Logging.LogManager;
+
+
+@WebService(endpointInterface = "Interface.Addition")
+public class Impl implements Addition{
+
+	String department;
+	UDPServer udpServer;
+	static LogManager logManager=null;
+	static public HashMap<String,HashMap<String,HashMap<String,Object>>> recordDetails=new HashMap<>();
 	
-	int sequenceId;
 
-	static String department;
-	static public HashMap<String,HashMap<String,HashMap<String,java.lang.Object>>> recordDetails=new HashMap<>();
-	public DCRSImpl(String dept) throws RemoteException,IOException {
-		super();
-		department=dept;
-		logManager=new LogManager(dept.toUpperCase()+".log");
-
+	
+	 public Impl(String dept)  {
+		//super();
+		this.department = dept.toUpperCase();
+		try {
+			logManager = new LogManager(dept+".log");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
-	String IPaddress;
-	static public HashMap<String,String> studentRecords;
-	UDPServer udpServer=new UDPServer();
-
-	public HashMap<String,HashMap<String,HashMap<String,java.lang.Object>>> getCourseRecords(){
-
-		return recordDetails;
-	}
-	
-
-	// implement add() method
-	public int add(int a, int b) {
-		int r=a+b;
-		return r;
-	}
-
 	
 	
-	public boolean addCourse(String courseID, String semester, String capacity) {
-		logManager.writeLog("REQUEST TYPE:addcourse"+"parameters:"+courseID+","+semester+","+capacity);
+	
+	
+	public boolean addCourse(String advisorId,String courseID, String semester, int capacity) {
+		// TODO Auto-generated method stub
 		if(recordDetails==null) {
 			HashMap<String, HashMap<String, java.lang.Object>> subMap=new HashMap<>();
 			HashMap<String, java.lang.Object> detailsMap=new HashMap<>();
@@ -92,15 +88,10 @@ public class DCRSImpl {
 		}
 		logManager.writeLog("Request Succeeded");
 		return true;
-
 	}
 
 	
-	public boolean removeCourse(String courseID, String semester) {
-
-		//System.out.println("RD:"+recordDetails);
-		logManager.writeLog("REQUEST TYPE:removecourse"+"parameters:"+courseID+","+semester);
-
+	public boolean removeCourse(String advisorId,String courseID, String semester) {
 		if(recordDetails==null) {
 			logManager.writeLog("Request Failed");
 			return false;
@@ -138,19 +129,20 @@ public class DCRSImpl {
 	}
 
 	
-	public SimpleEntry<Boolean , String> enrolCourse(String studentID, String courseID, String semester) {
-
-		logManager.writeLog("REQUEST TYPE:enrolcourse"+"parameters:"+studentID+","+courseID+","+semester);
+	public SimpleEntry<Boolean,String> enrolCourse(String studentID, String courseID, String semester) {
+		// TODO Auto-generated method stub
 		String status="Failure";
-		//Any retValue = orb.create_any();
-		SimpleEntry<Boolean, String> message =new SimpleEntry<Boolean, String>(true, "course enrolled successfully");
-
-		
-		if(!(returnSemesterCountForStudent(studentID, semester)<3)) {
-			logManager.writeLog("Request Failed due to course limit exceeding per sem");
-			message =new SimpleEntry<Boolean, String>(true, "course enrolled successfully");
-			//retValue.insert_Value( (java.io.Serializable) message);
-			return message;
+		System.out.println("coming");
+		SimpleEntry<Boolean,String> message = new SimpleEntry<Boolean, String>(false, "course enrollment unsuccessful");
+		try {
+			if(!(returnSemesterCountForStudent(studentID, semester)<3)) {
+				logManager.writeLog("Request Failed due to course limit exceeding per sem");
+				message = new SimpleEntry<Boolean, String>(false, "course enrollment unsuccessful");
+				return message;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		if(department.equalsIgnoreCase("comp"))
 			status=commonEnrolmentFunctionality(studentID,courseID,semester,"comp","soen","inse");
@@ -158,17 +150,288 @@ public class DCRSImpl {
 			status=commonEnrolmentFunctionality(studentID,courseID,semester,"soen","inse","comp");
 		if(department.equalsIgnoreCase("inse"))
 			status=commonEnrolmentFunctionality(studentID,courseID,semester,"inse","soen","comp");
-		if(status.equalsIgnoreCase("success")) {
-			message =new SimpleEntry<Boolean, String>(true, "course enrolment"+" "+status);
+		if(status.contains("success")) {
+			message = new SimpleEntry<Boolean, String>(true, "course enrollment successful");
 		}
-		else {
-			message =new SimpleEntry<Boolean, String>(false, "course enrolment"+" "+status);
-		}
-		//retValue.insert_Value( (java.io.Serializable) message);
+		
 		return message;
 	}
 
+	
+	public boolean dropCourse(String studentID, String courseID) {
 
+		logManager.writeLog("REQUEST TYPE:dropcourse"+"parameters:"+studentID+","+courseID);
+		String status="Failure";
+		if(department.equalsIgnoreCase("comp")) {
+			try {
+			String dummy="dropcourse"+":"+studentID+":"+courseID;
+			UDPClient udpClient=new UDPClient();
+			String response1=new String();
+			if(courseID.contains("SOEN")) {
+				response1 = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT("SOEN"))));
+			//	response1=udpClient.udpRequest("SOEN", dummy);
+				if(response1.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}
+			if(courseID.contains("INSE")) {
+				response1 = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT("INSE"))));
+				//response1=udpClient.udpRequest("INSE", dummy);
+				if(response1.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			if(courseID.contains("COMP")) {
+				String response4=dropcourseinowndept( studentID, courseID);
+				if(response4.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}
+		}
+		else if(department.equalsIgnoreCase("inse")) {
+			String dummy="dropcourse"+":"+studentID+":"+courseID;
+			UDPClient udpClient=new UDPClient();
+			String response1=new String();
+			try {
+			if(courseID.contains("SOEN")) {
+				response1 = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT("SOEN"))));
+			//	response1=udpClient.udpRequest("SOEN", dummy);
+				if(response1.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}
+			if(courseID.contains("COMP")) {
+				response1 = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT("COMP"))));
+			//	response1=udpClient.udpRequest("COMP", dummy);
+				if(response1.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			if(courseID.contains("INSE")) {
+				String response4=dropcourseinowndept( studentID, courseID);
+				if(response4.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}
+		}
+		else if(department.equalsIgnoreCase("soen")) {
+			String dummy="dropcourse"+":"+studentID+":"+courseID;
+			UDPClient udpClient=new UDPClient();
+			String response1=new String();
+			try {
+			if(courseID.contains("INSE")) {
+				response1 = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT("INSE"))));
+			//	response1=udpClient.udpRequest("INSE", dummy);
+				if(response1.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}
+			if(courseID.contains("COMP")) {
+				response1 = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT("COMP"))));
+			//	response1=udpClient.udpRequest("COMP", dummy);
+				if(response1.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			if(courseID.contains("SOEN")) {
+				String response4=dropcourseinowndept( studentID, courseID);
+				if(response4.toString().equals("success")) {
+					logManager.writeLog("Request Succeeded");
+					status="success";
+				}
+				else {
+					logManager.writeLog("Request Failed");
+					status="Failure";
+				}
+			}
+		}
+		
+		if(status.equalsIgnoreCase("success")) {
+			return true;
+		}
+		else if(status.equalsIgnoreCase("failure")){
+			return false;
+		}
+		
+		return false;
+	}
+
+	
+	public HashMap<String, Integer> listCourseAvailability(String advisorId,String semester) {
+		// TODO Auto-generated method stub
+	//	String listCourses= new String();
+		HashMap<String, Integer> availableCourseList=new HashMap<>();
+		if(department.equalsIgnoreCase("comp")) {
+			availableCourseList=commonListCourseFunctionality(semester, "SOEN", "INSE");
+			
+		}
+
+		else if(department.equalsIgnoreCase("inse")) {
+			availableCourseList=commonListCourseFunctionality(semester, "SOEN", "COMP");
+		}
+		else if(department.equalsIgnoreCase("soen")) {
+			availableCourseList=commonListCourseFunctionality(semester, "COMP", "INSE");
+		}
+
+		/*for(Map.Entry<String, Integer> map:availableCourseList.entrySet()) {
+			listCourses+=map.getKey()+":"+String.valueOf(map.getValue());
+		}*/
+		return availableCourseList;
+	}
+
+	
+	public HashMap<String, ArrayList<String>> getClassSchedule(String studentId) {
+
+		HashMap<String, ArrayList<String>> overallSchedule=null;
+
+		String classSchedule=new String();
+
+
+		if(department.equalsIgnoreCase("comp")) {
+
+			overallSchedule=commonGetClassSchedule(overallSchedule, studentId, "SOEN", "INSE");
+
+		}
+		else if(department.equalsIgnoreCase("inse")) {
+			overallSchedule=commonGetClassSchedule(overallSchedule, studentId, "SOEN", "COMP");
+		}
+		else if(department.equalsIgnoreCase("soen")) {
+			overallSchedule = commonGetClassSchedule(overallSchedule, studentId, "INSE", "COMP");
+		}
+
+		System.out.println("Original map:"+overallSchedule);
+		for(Map.Entry<String, ArrayList<String>> map:overallSchedule.entrySet()) {
+
+			classSchedule+=map.getKey()+":"+map.getValue().toString()+" ";
+		}
+
+		return overallSchedule;	
+
+	}
+
+	
+	public SimpleEntry<Boolean,String> swapCourse(String studentID, String newCourseID, String oldCourseID) {
+
+
+		// TODO Auto-generated method stub
+		logManager.writeLog("REQUEST TYPE:swapCourse,Parameters:"+studentID+","+newCourseID+","+oldCourseID);
+		SimpleEntry<Boolean, String> message =new SimpleEntry<Boolean, String>(true, "course swapped successfully");
+
+	//	String message="swap operation failed";
+		//check if old course exist
+
+		if(doesOldcourseexist(studentID,oldCourseID,department).getKey()) {
+			System.out.println("old course exists");
+			String sem=doesOldcourseexist(studentID,oldCourseID,department).getValue();
+			System.out.println(placeAvailableinNewCourse(studentID,newCourseID,department));
+			if(sem !=null && placeAvailableinNewCourse(studentID,newCourseID,department)) {
+				System.out.println("new course available");
+				synchronized (this) {
+					String enrolment=null;
+					boolean dropResult=dropCourse(studentID, oldCourseID);
+					if(dropResult) {
+						//check if available space in new course
+						enrolment=enrolCourse(studentID, newCourseID, sem).getValue().toString();
+						if(enrolment!=null && enrolment.equalsIgnoreCase("success")) {
+						//	logManager.writeLog("course swapped successfully");	
+							message =new SimpleEntry<Boolean, String>(true, "course swapped successfully");
+						//	message="course swapped successfully";
+						}else {
+						//	message="enrolment failure";
+							message =new SimpleEntry<Boolean, String>(true, "course swapping failed due to enrolment issue");
+							//if enrolment is failed, then drop should not happen and hence student is enrolled again into the old course here
+							enrolCourse(studentID, oldCourseID, sem);
+						}
+					}
+					else {
+						message =new SimpleEntry<Boolean, String>(true, "course swapping failure");
+						
+					}
+
+				}
+
+			}
+			else {
+				logManager.writeLog("swap operation failed");
+			}
+
+		}
+
+		
+		return message;
+	
+	}
+
+	
+	
+	
+	/////helper methods
+	
+	
+	public String fetchUDPPORT(String dep) {
+		
+		if(dep.equalsIgnoreCase("SOEN")) {
+			return "INSTANCE2_SOEN_PORT";
+		}
+		else if(dep.equalsIgnoreCase("COMP")) {
+			return "INSTANCE2_COMP_PORT";
+		}
+		else if(dep.equalsIgnoreCase("INSE")) {
+			return "INSTANCE2_INSE_PORT";
+		}
+		return null;
+	}
+	
 	public  String commonEnrolmentFunctionality(String studentID, String courseID, String semester, String d1,String d2,String d3)  {
 		String dummy="enrolcourse"+":"+semester+":"+studentID+":"+courseID;
 		String dummy2="getOtherCourseCount"+":"+studentID;
@@ -178,13 +441,23 @@ public class DCRSImpl {
 		int othrCount=0;
 		String response1=new String();
 		if(courseID.toLowerCase().contains(d2)) {
-
-			countStr=udpClient.udpRequest(d2.toUpperCase(), dummy2);
-			if(udpClient.udpRequest(d3.toUpperCase(), dummy2)!=null && Integer.parseInt(udpClient.udpRequest(d3.toUpperCase(), dummy2))>0) {
-				System.out.println("count for d3:"+udpClient.udpRequest(d3.toUpperCase(), dummy2));
-				othrCount+=Integer.parseInt(udpClient.udpRequest(d3.toUpperCase(), dummy2));
+			try {
+				countStr =(String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy2,Config.getConfig(fetchUDPPORT(d3.toUpperCase()))));
+				String checkCount = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy2,Config.getConfig(fetchUDPPORT(d2.toUpperCase()))));
+				if(checkCount!=null && Integer.parseInt(checkCount)>0) {
+					System.out.println("count for d3:"+checkCount);
+					othrCount+=Integer.parseInt(checkCount);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			System.out.println("count for d2:"+countStr);
+			//countStr=udpClient.udpRequest(d2.toUpperCase(), dummy2);
+			if(countStr!=null && Integer.parseInt(countStr)>0) {
+				System.out.println("count for d2:"+countStr);
+				othrCount+=Integer.parseInt(countStr);
+			}
+			System.out.println("count for d3:"+countStr);
 			if(countStr!=null && Integer.parseInt(countStr)>=0) {
 				othrCount+=Integer.parseInt(countStr);
 				System.out.println("othrCount:"+othrCount);
@@ -193,7 +466,13 @@ public class DCRSImpl {
 					return "Failure due to excess of other dept courses";
 				}
 			}
-			response1=udpClient.udpRequest(d2.toUpperCase(), dummy);
+			//response1=udpClient.udpRequest(d3.toUpperCase(), dummy);
+				try {
+					response1= (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT(d2.toUpperCase()))));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			//	System.out.println("Response from SOEN enrolment:"+response1+":"+countStr);
 			//	logManager.logger.log("Response from SOEN enrolment:"+response1+":"+countStr);
 			if(response1.toString().equals("success")) {
@@ -207,7 +486,54 @@ public class DCRSImpl {
 			}
 
 		}
+		
 		if(courseID.toLowerCase().contains(d3)) {
+			try {
+				countStr =(String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy2,Config.getConfig(fetchUDPPORT(d2.toUpperCase()))));
+				String checkCount = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy2,Config.getConfig(fetchUDPPORT(d3.toUpperCase()))));
+				if(checkCount!=null && Integer.parseInt(checkCount)>0) {
+					System.out.println("count for d3:"+checkCount);
+					othrCount+=Integer.parseInt(checkCount);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//countStr=udpClient.udpRequest(d2.toUpperCase(), dummy2);
+			if(countStr!=null && Integer.parseInt(countStr)>0) {
+				System.out.println("count for d2:"+countStr);
+				othrCount+=Integer.parseInt(countStr);
+			}
+			System.out.println("count for d3:"+countStr);
+			if(countStr!=null && Integer.parseInt(countStr)>=0) {
+				othrCount+=Integer.parseInt(countStr);
+				System.out.println("othrCount:"+othrCount);
+				if(othrCount>=2) {
+					logManager.writeLog("Failure due to excess of other dept courses");
+					return "Failure due to excess of other dept courses";
+				}
+			}
+			//response1=udpClient.udpRequest(d3.toUpperCase(), dummy);
+				try {
+					response1= (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT(d3.toUpperCase()))));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			//	System.out.println("Response from SOEN enrolment:"+response1+":"+countStr);
+			//	logManager.logger.log("Response from SOEN enrolment:"+response1+":"+countStr);
+			if(response1.toString().equals("success")) {
+				logManager.writeLog("Request Succeeded");
+				return "success";						
+
+			}
+			else {
+				logManager.writeLog("Request Failed");
+				return "Failure";
+			}
+
+		}
+		/*if(courseID.toLowerCase().contains(d3)) {
 
 			countStr=udpClient.udpRequest(d2.toUpperCase(), dummy2);
 			if(udpClient.udpRequest(d2.toUpperCase(), dummy2)!=null && Integer.parseInt(udpClient.udpRequest(d2.toUpperCase(), dummy2))>0) {
@@ -236,7 +562,7 @@ public class DCRSImpl {
 				return "Failure";
 			}
 
-		}
+		}*/
 		if(courseID.toLowerCase().contains(d1)) {
 			response1=enrolCourseinowndept(studentID, courseID, semester);
 			if(response1.toString().equals("success")) {
@@ -256,29 +582,57 @@ public class DCRSImpl {
 
 
 
-	public int returnSemesterCountForStudent(String studentID, String sem)  {
+	public int returnSemesterCountForStudent(String studentID, String sem) throws FileNotFoundException, IOException  {
 		int count=0;
 		if(studentID.contains("COMP")) {
 			String dummy="semcount"+":"+sem+":"+studentID;
 			UDPClient udpClient=new UDPClient();
-			count+=Integer.parseInt(udpClient.udpRequest("SOEN", dummy));
-			count+=Integer.parseInt(udpClient.udpRequest("INSE", dummy));
+			/*String soenthing = udpClient.udpRequest("SOEN", dummy);
+			System.out.println(soenthing);*/
+			//System.out.println("What is th object coming here?:"+udpClient.sendRequest(dummy,Config.getConfig("INSTANCE2_COMP_PORT")));
+			String soenthing = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig("INSTANCE2_SOEN_PORT")));
+			if(soenthing == null) {
+				soenthing ="0";
+			}
+			count+=Integer.parseInt(soenthing);
+			String insething = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig("INSTANCE2_INSE_PORT")));
+			if(insething == null) {
+				insething ="0";
+			}
+			count+=Integer.parseInt(insething);
+			//count+=Integer.parseInt(udpClient.udpRequest("INSE", dummy));
 			count+=returnDeptSemesterCountForStudent(studentID, sem);
 
 		}
 		else if(studentID.contains("INSE")) {
 			String dummy="semcount"+":"+sem+":"+studentID;
 			UDPClient udpClient=new UDPClient();
-			count+=Integer.parseInt(udpClient.udpRequest("SOEN", dummy));
-			count+=Integer.parseInt(udpClient.udpRequest("COMP", dummy));
+			String soenthing = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig("INSTANCE2_SOEN_PORT")));
+			if(soenthing == null) {
+				soenthing ="0";
+			}
+			count+=Integer.parseInt(soenthing);
+			String insething = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig("INSTANCE2_COMP_PORT")));
+			if(insething == null) {
+				insething ="0";
+			}
+			count+=Integer.parseInt(insething);
 			count+=returnDeptSemesterCountForStudent(studentID, sem);
 
 		}
 		else if(studentID.contains("SOEN")) {
 			String dummy="semcount"+":"+sem+":"+studentID;
 			UDPClient udpClient=new UDPClient();
-			count+=Integer.parseInt(udpClient.udpRequest("INSE", dummy));
-			count+=Integer.parseInt(udpClient.udpRequest("COMP", dummy));
+			String soenthing = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig("INSTANCE2_INSE_PORT")));
+			if(soenthing == null) {
+				soenthing ="0";
+			}
+			count+=Integer.parseInt(soenthing);
+			String insething = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig("INSTANCE2_COMP_PORT")));
+			if(insething == null) {
+				insething ="0";
+			}
+			count+=Integer.parseInt(insething);
 			count+=returnDeptSemesterCountForStudent(studentID, sem);
 
 		}
@@ -532,130 +886,6 @@ public class DCRSImpl {
 		return true;
 	}
 
-
-
-	
-	public boolean dropCourse(String studentID, String courseID) {
-
-		logManager.writeLog("REQUEST TYPE:dropcourse"+"parameters:"+studentID+","+courseID);
-		boolean status=false;
-		if(department.equalsIgnoreCase("comp")) {
-			String dummy="dropcourse"+":"+studentID+":"+courseID;
-			UDPClient udpClient=new UDPClient();
-			String response1=new String();
-			if(courseID.contains("SOEN")) {
-				response1=udpClient.udpRequest("SOEN", dummy);
-				if(response1.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-			if(courseID.contains("INSE")) {
-				response1=udpClient.udpRequest("INSE", dummy);
-				if(response1.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-			if(courseID.contains("COMP")) {
-				String response4=dropcourseinowndept( studentID, courseID);
-				if(response4.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-		}
-		else if(department.equalsIgnoreCase("inse")) {
-			String dummy="dropcourse"+":"+studentID+":"+courseID;
-			UDPClient udpClient=new UDPClient();
-			String response1=new String();
-			if(courseID.contains("SOEN")) {
-				response1=udpClient.udpRequest("SOEN", dummy);
-				if(response1.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-			if(courseID.contains("COMP")) {
-				response1=udpClient.udpRequest("COMP", dummy);
-				if(response1.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-			if(courseID.contains("INSE")) {
-				String response4=dropcourseinowndept( studentID, courseID);
-				if(response4.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-		}
-		else if(department.equalsIgnoreCase("soen")) {
-			String dummy="dropcourse"+":"+studentID+":"+courseID;
-			UDPClient udpClient=new UDPClient();
-			String response1=new String();
-			if(courseID.contains("INSE")) {
-				response1=udpClient.udpRequest("INSE", dummy);
-				if(response1.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-			if(courseID.contains("COMP")) {
-				response1=udpClient.udpRequest("COMP", dummy);
-				if(response1.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-			if(courseID.contains("SOEN")) {
-				String response4=dropcourseinowndept( studentID, courseID);
-				if(response4.toString().equals("success")) {
-					logManager.writeLog("Request Succeeded");
-					status=true;
-				}
-				else {
-					logManager.writeLog("Request Failed");
-					status=false;
-				}
-			}
-		}
-		return status;
-	}
-
 	public String dropcourseinowndept(String studentID, String courseID) {
 
 		String status="Failure";
@@ -703,64 +933,42 @@ public class DCRSImpl {
 
 		return status;
 	}
-
-
-
-	public HashMap<String, Integer> listCourseAvailability(String semester)  {
-		logManager.writeLog("REQUEST TYPE: listCourseAvailability"+"parameters:"+semester);
-		
-		HashMap<String, Integer> availableCourseList=new HashMap<>();
-		if(department.equalsIgnoreCase("comp")) {
-			availableCourseList=commonListCourseFunctionality(semester, "SOEN", "INSE");
-			
-		}
-
-		else if(department.equalsIgnoreCase("inse")) {
-			availableCourseList=commonListCourseFunctionality(semester, "SOEN", "COMP");
-		}
-		else if(department.equalsIgnoreCase("soen")) {
-			availableCourseList=commonListCourseFunctionality(semester, "COMP", "INSE");
-		}
-
-		
-	/*	Any retValue = orb.create_any();
-		
-
-		retValue.insert_Value( (java.io.Serializable) availableCourseList);*/
-		return availableCourseList;
-
-
-
-	}
-
-
 	public HashMap<String,Integer> commonListCourseFunctionality(String semester,String d1, String d2){
 
 		HashMap<String,Integer> availableCourseList=new HashMap<>(); 
 		String dummy="listcourse"+":"+semester;
 		UDPClient udpClient=new UDPClient();
-		String response1=udpClient.udpRequest(d1, dummy);
+		String response1;
+		try {
+			response1 = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT(d1.toUpperCase()))));
+			String soenSubs[] =response1.split(",");
+			if(soenSubs.length >1&& soenSubs[0].split("=").length>1) {
+				for(int i=0;i<soenSubs.length;i++) {
+					String subjectId=soenSubs[i].split("=")[0];
+					String capacity=soenSubs[i].split("=")[1];
+					//		System.out.println(subjectId+"..."+capacity);
+					availableCourseList.put(subjectId,Integer.parseInt(capacity.trim()));
+
+				}
+			}
+			else if(soenSubs.length==1 && soenSubs[0].split("=").length>1) {
+				String subjectId=soenSubs[0].split("=")[0];
+				String capacity=soenSubs[0].split("=")[1];
+				//		System.out.println("CAPACITY..."+capacity);			
+				availableCourseList.put(subjectId,Integer.parseInt(capacity.trim()));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//String response1=udpClient.udpRequest(d1, dummy);
 		//		System.out.println("Response from SOEN:"+response1);
-		String soenSubs[] =response1.split(",");
+		
 		//response1.replaceFirst(",", "");
 		//		System.out.println("RESPONSE:"+response1);
-		if(soenSubs.length >1&& soenSubs[0].split("=").length>1) {
-			for(int i=0;i<soenSubs.length;i++) {
-				String subjectId=soenSubs[i].split("=")[0];
-				String capacity=soenSubs[i].split("=")[1];
-				//		System.out.println(subjectId+"..."+capacity);
-				availableCourseList.put(subjectId,Integer.parseInt(capacity.trim()));
-
-			}
-		}
-		else if(soenSubs.length==1 && soenSubs[0].split("=").length>1) {
-			String subjectId=soenSubs[0].split("=")[0];
-			String capacity=soenSubs[0].split("=")[1];
-			//		System.out.println("CAPACITY..."+capacity);			
-			availableCourseList.put(subjectId,Integer.parseInt(capacity.trim()));
-		}
-
-		String response2=udpClient.udpRequest(d2, dummy);
+		try {
+		String response2 = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy,Config.getConfig(fetchUDPPORT(d2.toUpperCase()))));
+		//String response2=udpClient.udpRequest(d2, dummy);
 		String inseSubs[] =response2.split(",");
 		//response2.replaceFirst(",", "");
 		//	System.out.println("RESPONSE:"+response2);
@@ -779,7 +987,10 @@ public class DCRSImpl {
 			//		System.out.println("CAPACITY..."+capacity);			
 			availableCourseList.put(subjectId,Integer.parseInt(capacity.trim()));
 		}
-
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		if(recordDetails !=null) {
 			HashMap<String,HashMap<String,java.lang.Object>> semCourseList=recordDetails.get(semester);
 			//	System.out.println(recordDetails);
@@ -798,26 +1009,15 @@ public class DCRSImpl {
 
 	
 	}
-	
-	
-	
-	
-/*	public Any getClassSchedule(String studentId) {
-		Any retValue=orb.create_any();
-		System.out.println("before class schedule:"+recordDetails);
-		// TODO Auto-generated method stub
-		System.out.println("classs schedule thing:"+getClassSchedule1(studentId));
-		HashMap<String, ArrayList<String>> returnSchedule=getClassSchedule1(studentId);
-		retValue.insert_Value((Serializable)returnSchedule);
-
-		return retValue;
-	}*/
-
 	private HashMap<String, ArrayList<String>> commonGetClassSchedule(HashMap<String, ArrayList<String>> overallSchedule, String studentId,String d1,String d2) {
 
 
 		overallSchedule=new HashMap<>();
-	
+		HashMap<String,ArrayList<String>> commonSchedule=new HashMap<>();
+		//	String status="Failure";
+		ArrayList<String> fallList=new ArrayList<String>();
+		ArrayList<String> winterList=new ArrayList<String>();
+		ArrayList<String> summerList=new ArrayList<String>();
 		String dummy="classschedule"+":"+studentId;
 		UDPClient udpClient=new UDPClient();
 		String response1=new String();
@@ -828,33 +1028,15 @@ public class DCRSImpl {
 		response2=udpClient.udpRequest(d1, dummy);
 		System.out.println("res2:"+response2);
 		//	System.out.println("RESPONSE from SOEN schedule:"+response2);
-		/*String response3=new String();
-		Sresponse3=udpClient.udpRequest(d2, dummy);*/
-	
-		
+		String response3=new String();
+		response3=udpClient.udpRequest(d2, dummy);
+		System.out.println("res3:"+response3);
+		HashMap<String,ArrayList<String>> res1Map=scheduleUtility(response1, overallSchedule,fallList,winterList,summerList);
 
-		return overallSchedule;
-	}
+		HashMap<String,ArrayList<String>> res2Map=scheduleUtility(response2, overallSchedule,fallList,winterList,summerList);
+		HashMap<String,ArrayList<String>> res3Map=scheduleUtility(response3, overallSchedule,fallList,winterList,summerList);
 
-
-	public HashMap<String,ArrayList<String>> getClassSchedule(String studentId){
-		// TODO Auto-generated method stub
-		logManager.writeLog("REQUEST TYPE:getClassSchedule,Parameters:"+studentId);
-		//	System.out.println("Record details for the class:"+recordDetails);
-		HashMap<String, ArrayList<String>> overallSchedule=null;
-		if(department.equalsIgnoreCase("comp")) {
-
-			return commonGetClassSchedule(overallSchedule, studentId, "SOEN", "INSE");
-
-		}
-		else if(department.equalsIgnoreCase("inse")) {
-			return commonGetClassSchedule(overallSchedule, studentId, "SOEN", "COMP");
-		}
-		else if(department.equalsIgnoreCase("soen")) {
-			return commonGetClassSchedule(overallSchedule, studentId, "INSE", "COMP");
-		}
-
-
+		System.out.println("what happens now?"+overallSchedule);
 
 		return overallSchedule;
 	}
@@ -887,55 +1069,6 @@ public class DCRSImpl {
 
 		return fullmap;
 	}
-
-	
-	public SimpleEntry<Boolean, String>  swapCourse(String studentID, String newCourseID, String oldCourseID) {
-		// TODO Auto-generated method stub
-		logManager.writeLog("REQUEST TYPE:swapCourse,Parameters:"+studentID+","+newCourseID+","+oldCourseID);
-		SimpleEntry<Boolean, String> message =new SimpleEntry<Boolean, String>(true, "course swapped successfully");
-
-		message=new SimpleEntry<Boolean, String>(false, "swap operation failed");
-		//check if old course exist
-
-		if(doesOldcourseexist(studentID,oldCourseID,department).getKey()) {
-			System.out.println("old course exists");
-			String sem=doesOldcourseexist(studentID,oldCourseID,department).getValue();
-			System.out.println(placeAvailableinNewCourse(studentID,newCourseID,department));
-			if(sem !=null && placeAvailableinNewCourse(studentID,newCourseID,department)) {
-				System.out.println("new course available");
-				synchronized (this) {
-					String enrolment=null;
-					boolean dropResult=dropCourse(studentID, oldCourseID);
-					if(dropResult) {
-						//check if available space in new course
-						enrolment=enrolCourse(studentID, newCourseID, sem).getValue();
-						//System.out.println("ENROLMENT STRING IS:"+enrolment);
-						if(enrolment!=null && enrolment.contains("success")) {
-							logManager.writeLog("course swapped successfully");	
-							message=new SimpleEntry<Boolean, String>(true, "course swapped successfully");
-						}else {
-							message=new SimpleEntry<Boolean, String>(false, "enrolment failure");
-							//if enrolment is failed, then drop should not happen and hence student is enrolled again into the old course here
-							enrolCourse(studentID, oldCourseID, sem);
-						}
-					}
-					else
-						message=new SimpleEntry<Boolean, String>(false, "drop course failure");
-
-				}
-
-			}
-			else {
-				logManager.writeLog("swap operation failed");
-			}
-
-		}
-
-		//Any retValue=orb.create_any();
-		//retValue.insert_Value( (java.io.Serializable) message);
-		return message;
-	}
-
 	private boolean placeAvailableinNewCourse(String studentID, String newCourseID, String department2) {
 		String dummy="availablespace"+":"+studentID+":"+newCourseID;
 		UDPClient udpClient=new UDPClient();
@@ -1063,8 +1196,18 @@ public class DCRSImpl {
 		return "Failure";
 	}
 
+	public HashMap<String, HashMap<String, HashMap<String, Object>>> getRecordDetails() {
+		// TODO Auto-generated method stub
+		return recordDetails;
+	}
+
+
+
+
+
+
 	
 
 
-
+	
 }
