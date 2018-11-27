@@ -35,7 +35,7 @@ public class UDPServer extends Thread {
 				DatagramPacket requestPacket = new DatagramPacket(receivedBuffer, receivedBuffer.length);
 				socket.receive(requestPacket);
 
-	            String request = new String(requestPacket.getData(), 0, requestPacket.getLength());      
+	            String request = new String(requestPacket.getData(), 0, requestPacket.getLength());
 	            byte[] responseBuffer = processRequest(request);
 	            if(responseBuffer == null)
 	            	continue; //will reply to Front end manually

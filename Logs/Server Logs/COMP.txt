@@ -13,3 +13,8 @@ COMP6161 => 1,
 [22:58:48 26/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
 [23:08:57 26/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
 [23:10:15 26/11/2018] [Add Course] [Successfull] COMP6162 successfully added to FALL semester, by COMPA1931
+[00:40:38 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[00:41:58 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[00:43:37 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[01:37:39 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[01:39:34 27/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
