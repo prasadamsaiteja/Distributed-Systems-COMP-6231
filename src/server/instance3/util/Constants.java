@@ -15,9 +15,9 @@ package server.instance3.util;
  */
 public class Constants {
 
-	public static final String ADVISOR_LOG_DIRECTORY = "./Logs/Client\\ Logs/instance3/advisor/";
-	public static final String STUDENT_LOG_DIRECTORY = "./Logs/Client\\ Logs/instance3/student/";
-	public static final String SERVER_LOG_DIRECTORY = "./Logs/Server\\ Logs/instance3/";
+	public static final String ADVISOR_LOG_DIRECTORY = "./Logs/Client Logs/instance3/advisor/";
+	public static final String STUDENT_LOG_DIRECTORY = "./Logs/Client Logs/instance3/student/";
+	public static final String SERVER_LOG_DIRECTORY = "./Logs/Server Logs/instance3/";
 	public static final String UNDERSCORE = "_";
 	public static final String EMPTYSTRING = "";
 	public static final String CAPACITY = "capacity";

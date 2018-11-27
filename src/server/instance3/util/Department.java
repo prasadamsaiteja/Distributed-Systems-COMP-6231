@@ -6,6 +6,8 @@
 */
 package server.instance3.util;
 
+import generic.Config;
+
 /**
  * Department Enumeration
  * 
@@ -15,20 +17,18 @@ package server.instance3.util;
  */
 public enum Department {
 
-	COMP(4444, 8080), SOEN(5555, 8081), INSE(6666, 8082);
-	int udpPort, webServicePort;
+	COMP(Config.getConfig("INSTANCE3_COMP_PORT")), 
+	SOEN(Config.getConfig("INSTANCE3_SOEN_PORT")),
+	INSE(Config.getConfig("INSTANCE3_INSE_PORT"));
+	
+	int udpPort;
 
-	private Department(int udpPort, int webServicePort) {
+	private Department(int udpPort) {
 		this.udpPort = udpPort;
-		this.webServicePort = webServicePort;
 	}
 
 	public int getUdpPort() {
 		return udpPort;
-	}
-
-	public int getWebServicePort() {
-		return webServicePort;
 	}
 
 	public static boolean departmentExist(String dept) {

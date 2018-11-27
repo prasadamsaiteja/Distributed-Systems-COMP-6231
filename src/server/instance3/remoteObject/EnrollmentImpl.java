@@ -22,9 +22,6 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
-
 import generic.Config;
 import generic.UDPUtilities;
 import server.instance3.util.Constants;
@@ -36,8 +33,6 @@ import server.instance3.util.Utils;
  * @see <a href='https://www.linkedin.com/in/imamanrana/' target=
  *      "_blank">Profile</a>
  */
-@WebService(endpointInterface = "remoteObject.EnrollmentInterface")
-@SOAPBinding(style = SOAPBinding.Style.RPC)
 public class EnrollmentImpl implements EnrollmentInterface {
 
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -583,8 +578,8 @@ public class EnrollmentImpl implements EnrollmentInterface {
 				// Server waits for the request to come
 				socket.receive(request); // request received
 
-				String data = new String(request.getData(), 0, request.getLength());
-				byte[] response = processRequest(data, socket);
+				
+				byte[] response = processRequest(request.getData(), socket);
 				if (response == null)
 					continue; // will reply to Front end manually
 
@@ -604,14 +599,16 @@ public class EnrollmentImpl implements EnrollmentInterface {
 		}
 	}
 
-	private byte[] processRequest(String data, DatagramSocket socket) {
-		if (data.startsWith("SEQUENCER&")) {
-			processSequencerRequest(data.replace("SEQUENCER&", ""), socket);
+	private byte[] processRequest(byte[] data, DatagramSocket socket) {
+		
+		String stringData = new String(data, 0, data.length);
+		if (stringData.startsWith("SEQUENCER&")) {
+			processSequencerRequest(stringData.replace("SEQUENCER&", ""), socket);
 			return null;
 		}
 
 		else
-			return processUDPRequest(data.getBytes());
+			return processUDPRequest(data);
 	}
 
 	private void processSequencerRequest(String receivedRequest, DatagramSocket socket) {
@@ -626,7 +623,7 @@ public class EnrollmentImpl implements EnrollmentInterface {
 			case Constants.OP_ADD_COURSE:
 
 				response = UDPUtilities
-						.objectToByteArray(addCourse(request[1], request[2], request[3], Integer.parseInt(request[4])));
+						.objectToByteArray(addCourse(request[1], request[2], request[3], Integer.parseInt(new String(request[4]).trim())));
 
 				break;
 
