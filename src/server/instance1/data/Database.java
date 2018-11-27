@@ -6,7 +6,10 @@ import generic.Config;
 
 public class Database {
 
-	private static Database instance = null;	
+	private static Database compInstance = null;
+	private static Database soenInstance = null;
+	private static Database inseInstance = null;
+	
 	public static HashMap<String, Integer> serverPorts; 
 		
 	public enum Terms {
@@ -38,10 +41,51 @@ public class Database {
 	
 	public static Database getInstance() {
 		
-		if(instance == null)
-			instance = new Database();
+		if(Thread.currentThread().getName().equals("COMP"))
+			return compInstance;
 		
-		return instance;
+		else if(Thread.currentThread().getName().equals("SOEN"))
+			return soenInstance;
+		
+		else if(Thread.currentThread().getName().equals("INSE"))
+			return inseInstance;
+		
+		return null;
+			
+	}
+	
+	public static Database getInstance(String serverName) {
+		
+		if(serverName.equals("COMP")) {
+		
+			if(compInstance == null) {
+				compInstance = new Database();
+				compInstance.department = "COMP";
+			}
+			
+			return compInstance;
+			
+		} else if(serverName.equals("SOEN")) {
+			
+			if(soenInstance == null){
+				soenInstance = new Database();
+				soenInstance.department = "SOEN";
+			}
+			
+			return soenInstance;
+			
+		} else if(serverName.equals("INSE")) {
+			
+			if(inseInstance == null){
+				inseInstance = new Database();
+				inseInstance.department = "INSE";
+			}
+			
+			return inseInstance;
+			
+		}
+
+		return null;
 	}
 		
 }

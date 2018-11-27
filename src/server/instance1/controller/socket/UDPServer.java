@@ -21,8 +21,8 @@ public class UDPServer extends Thread {
 
 	private DatagramSocket socket;
 	
-	public UDPServer() throws SocketException{
-		String department = Database.getInstance().department;
+	public UDPServer(String serverName) throws SocketException {
+		String department = Database.getInstance(serverName).department;
 		socket = new DatagramSocket(Database.serverPorts.get(department));
 	}
 	
@@ -137,8 +137,8 @@ public class UDPServer extends Thread {
 		
 		try {
 			
-			InetAddress serverIP = InetAddress.getByName(Config.getStringConfig("FRONTEND_IP"));
-			DatagramPacket replyPacket = new DatagramPacket(response, response.length, serverIP, Config.getConfig("FRONTEND_PORT"));
+			InetAddress frontendIP = InetAddress.getByName(Config.getStringConfig("FRONTEND_IP"));
+			DatagramPacket replyPacket = new DatagramPacket(response, response.length, frontendIP, Config.getConfig("FRONTEND_PORT"));
 	        socket.send(replyPacket);
 	        
 		} catch(Exception ex){

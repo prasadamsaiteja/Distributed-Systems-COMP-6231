@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import generic.Config;
 
@@ -27,9 +28,9 @@ public class SequencerUDPHandler {
 			
 			byte[] buffer = request.getBytes();
 			
-			DatagramPacket datagramPacket1 = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), getServerPortNumber(1));
-			DatagramPacket datagramPacket2 = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), getServerPortNumber(2));
-			DatagramPacket datagramPacket3 = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), getServerPortNumber(3));
+			DatagramPacket datagramPacket1 = new DatagramPacket(buffer, buffer.length, instanceInetAddress(1), getServerPortNumber(1));
+			DatagramPacket datagramPacket2 = new DatagramPacket(buffer, buffer.length, instanceInetAddress(2), getServerPortNumber(2));
+			DatagramPacket datagramPacket3 = new DatagramPacket(buffer, buffer.length, instanceInetAddress(3), getServerPortNumber(3));
 			
 			DatagramSocket socket= new DatagramSocket();
 			socket.send(datagramPacket1);
@@ -40,6 +41,10 @@ public class SequencerUDPHandler {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public InetAddress instanceInetAddress(int instance) throws UnknownHostException, FileNotFoundException, IOException {
+		return InetAddress.getByName(Config.getStringConfig("INSTANCE" + instance + "_IP"));
 	}
 	
 	public int getServerPortNumber(int instance) throws FileNotFoundException, IOException {

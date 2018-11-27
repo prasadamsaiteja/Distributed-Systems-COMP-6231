@@ -21,7 +21,10 @@ public class Logger {
 		String time = new SimpleDateFormat("[HH:mm:ss dd/MM/yyyy]").format(new java.util.Date()) + " "; 
 		
 		if(!isServer) System.out.print("\nResult: ");
-		else System.out.print(time);
+		else {
+			System.out.print(time);
+			System.out.print("[" + Database.getInstance().department + "] ");
+		}
 		
 		System.out.println(logStatement);
 		
@@ -91,7 +94,6 @@ public class Logger {
 		
 		log(temp);
 	}
-
 	
 	public static void enrolCourse(String studentId, String courseId, String semester, boolean status, String message) {
 		
@@ -102,7 +104,6 @@ public class Logger {
 				
 	}
 	
-
 	public static void dropCourse(String studentId, String courseId, boolean status) {
 		
 		if(status)
@@ -111,7 +112,6 @@ public class Logger {
 			log("[Drop Course] [Failed] " + studentId + " has tried to drop from course " + courseId + " but failed because he isn't enrolled it in any semester \n");
 
 	}
-
 	
 	public static void getClassSchedule(String studentId, HashMap<String, ArrayList<String>> result) {
 		

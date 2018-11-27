@@ -1,0 +1,5 @@
+[22:59:23 26/11/2018] [List Available Courses] [Successfull] SOENA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[23:00:59 26/11/2018] [Add Course] [Successfull] SOEN6161 successfully added to FALL semester, by SOENA1931
+[23:01:03 26/11/2018] [List Available Courses] [Successfull] SOENA1931 has requested course availability for FALL semester 
+COMP6161 => 1, SOEN6161 => 1, 

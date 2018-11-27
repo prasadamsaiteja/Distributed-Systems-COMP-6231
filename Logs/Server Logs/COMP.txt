@@ -6,3 +6,10 @@
 [16:13:13 26/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
 [16:13:20 26/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
 COMP6161 => 1, 
+[22:38:18 26/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[22:38:22 26/11/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[22:42:24 26/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[22:58:48 26/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[23:08:57 26/11/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[23:10:15 26/11/2018] [Add Course] [Successfull] COMP6162 successfully added to FALL semester, by COMPA1931

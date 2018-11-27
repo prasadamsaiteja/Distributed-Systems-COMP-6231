@@ -17,9 +17,11 @@ public class FrontEndUtitlies {
 			DatagramSocket socket = new DatagramSocket();
 			socket.setSoTimeout(500);
 			
-			DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("localhost"), Config.getConfig("SEQUENCER_PORT"));
+			InetAddress sequencerIP = InetAddress.getByName(Config.getStringConfig("SEQUENCER_IP"));
+			DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length, sequencerIP, Config.getConfig("SEQUENCER_PORT"));
 			socket.send(requestPacket);		
-		
+			System.out.println("Request sent to sequencer");
+			
 		} catch(Exception ignored){}
 
 		try{
@@ -27,6 +29,8 @@ public class FrontEndUtitlies {
 			byte[] receivedBuffer = new byte[46595];
 			DatagramPacket replyPacket = new DatagramPacket(receivedBuffer, receivedBuffer.length);
 			FrontEnd.datagramSocket.receive(replyPacket);		
+			System.out.println("Request received from instance 1");
+			
 			return UDPUtilities.byteArrayToObject(replyPacket.getData());
 			
 		} catch(Exception ex) {
