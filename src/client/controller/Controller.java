@@ -130,7 +130,8 @@ public class Controller {
 			studentId = readStudentId();
 			if(studentId == null) return;
 		}
-
+		//added by manjusha just to check her response
+System.out.println(Cache.getInstance().dcrs.enrolCourse(studentId, courseId, semester));
 		Any any = Cache.getInstance().dcrs.enrolCourse(studentId, courseId, semester);
 		SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) any.extract_Value();
 		Logger.enrolCourse(studentId, courseId, semester, result.getKey(), result.getValue().replaceAll("_", " "));

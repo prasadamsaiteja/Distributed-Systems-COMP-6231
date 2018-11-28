@@ -17,7 +17,6 @@ import server.instance2.Interface.Addition;
 import server.instance2.Logging.LogManager;
 
 
-@WebService(endpointInterface = "Interface.Addition")
 public class Impl implements Addition{
 
 	String department;
@@ -534,7 +533,6 @@ public class Impl implements Addition{
 
 		}
 		/*if(courseID.toLowerCase().contains(d3)) {
-
 			countStr=udpClient.udpRequest(d2.toUpperCase(), dummy2);
 			if(udpClient.udpRequest(d2.toUpperCase(), dummy2)!=null && Integer.parseInt(udpClient.udpRequest(d2.toUpperCase(), dummy2))>0) {
 				System.out.println("count for d2:"+udpClient.udpRequest(d2.toUpperCase(), dummy2));
@@ -555,13 +553,11 @@ public class Impl implements Addition{
 			if(response1.toString().equals("success")) {
 				logManager.writeLog("Request Succeeded");
 				return "success";						
-
 			}
 			else {
 				logManager.writeLog("Request Failed");
 				return "Failure";
 			}
-
 		}*/
 		if(courseID.toLowerCase().contains(d1)) {
 			response1=enrolCourseinowndept(studentID, courseID, semester);

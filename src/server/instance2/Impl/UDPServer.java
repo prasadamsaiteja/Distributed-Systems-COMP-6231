@@ -17,14 +17,15 @@ import generic.UDPUtilities;
 
 
 
-public class UDPServer {
+public class UDPServer{
 
 
 	static HashMap<String,Integer> serverRepo;
-
+	String dept;
 
 	public UDPServer() throws FileNotFoundException, IOException {
 		super();
+	//	this.dept = dept;
 		serverRepo=new HashMap<>();
 		serverRepo.put("COMP", Config.getConfig("INSTANCE2_COMP_PORT"));
 		serverRepo.put("INSE",Config.getConfig("INSTANCE2_INSE_PORT"));

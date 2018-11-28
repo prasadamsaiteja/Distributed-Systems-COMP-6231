@@ -2,13 +2,15 @@ package server.instance2.ws;
 
 import java.util.Scanner;
 
-import javax.xml.ws.Endpoint;
 
 import server.instance2.Impl.UDPServer;
 
 
 public class Server {
 
+	
+	
+	
 	public static void main(String[] args) throws Exception{
 
 
@@ -17,23 +19,22 @@ public class Server {
 		System.out.println("Enter the department:");
 		String dept = sc.next();
 		if(dept.equalsIgnoreCase("comp")) {
-			
 
 			UDPServer udpServer = new UDPServer();
 			udpServer.udpMain(dept.toUpperCase());
 		}
 		else if(dept.equalsIgnoreCase("soen")) {
-			
+
 			UDPServer udpServer = new UDPServer();
 			udpServer.udpMain(dept.toUpperCase());
 		}
 
 		else if(dept.equalsIgnoreCase("inse")) {
-			
+
 			UDPServer udpServer = new UDPServer();
 			udpServer.udpMain(dept.toUpperCase());
 		}
-		
+
 	}
 
 }

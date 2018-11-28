@@ -1,12 +1,10 @@
 package server.instance2.Interface;
 
-import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
+
 
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-@WebService
-@SOAPBinding(style = SOAPBinding.Style.RPC)
+
 public interface Addition {
 		
 	public boolean addCourse( String advisorId, String courseID, String semester, int capacity) ;
