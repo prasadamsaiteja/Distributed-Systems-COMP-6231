@@ -1,4 +1,4 @@
-package server.instance2.Impl;
+package server.instance2.dcrsimpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,18 +9,16 @@ import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 
-import javax.jws.WebService;
-
 import generic.Config;
 import generic.UDPUtilities;
-import server.instance2.Interface.Addition;
+import server.instance2.dcrsinterface.DCRSInterface;
 import server.instance2.logging.LogManager;
 
 
-public class Impl implements Addition{
+public class Impl implements DCRSInterface{
 
 	String department;
-	UDPServer udpServer;
+	
 	static LogManager logManager=null;
 	static public HashMap<String,HashMap<String,HashMap<String,Object>>> recordDetails=new HashMap<>();
 	
@@ -42,7 +40,7 @@ public class Impl implements Addition{
 	
 	
 	public boolean addCourse(String advisorId,String courseID, String semester, int capacity) {
-		// TODO Auto-generated method stub
+		
 		if(recordDetails==null) {
 			HashMap<String, HashMap<String, java.lang.Object>> subMap=new HashMap<>();
 			HashMap<String, java.lang.Object> detailsMap=new HashMap<>();
@@ -129,9 +127,9 @@ public class Impl implements Addition{
 
 	
 	public SimpleEntry<Boolean,String> enrolCourse(String studentID, String courseID, String semester) {
-		// TODO Auto-generated method stub
+		
 		String status="Failure";
-		System.out.println("coming");
+	//	System.out.println("coming");
 		SimpleEntry<Boolean,String> message = new SimpleEntry<Boolean, String>(false, "course enrollment unsuccessful");
 		try {
 			if(!(returnSemesterCountForStudent(studentID, semester)<3)) {
@@ -307,7 +305,7 @@ public class Impl implements Addition{
 
 	
 	public HashMap<String, Integer> listCourseAvailability(String advisorId,String semester) {
-		// TODO Auto-generated method stub
+		
 	//	String listCourses= new String();
 		HashMap<String, Integer> availableCourseList=new HashMap<>();
 		if(department.equalsIgnoreCase("comp")) {
@@ -348,7 +346,7 @@ public class Impl implements Addition{
 			overallSchedule = commonGetClassSchedule(overallSchedule, studentId, "INSE", "COMP");
 		}
 
-		System.out.println("Original map:"+overallSchedule);
+	//	System.out.println("Original map:"+overallSchedule);
 		for(Map.Entry<String, ArrayList<String>> map:overallSchedule.entrySet()) {
 
 			classSchedule+=map.getKey()+":"+map.getValue().toString()+" ";
@@ -362,7 +360,7 @@ public class Impl implements Addition{
 	public SimpleEntry<Boolean,String> swapCourse(String studentID, String newCourseID, String oldCourseID) {
 
 
-		// TODO Auto-generated method stub
+		
 		logManager.writeLog("REQUEST TYPE:swapCourse,Parameters:"+studentID+","+newCourseID+","+oldCourseID);
 		SimpleEntry<Boolean, String> message =new SimpleEntry<Boolean, String>(true, "course swapped successfully");
 
@@ -370,11 +368,11 @@ public class Impl implements Addition{
 		//check if old course exist
 
 		if(doesOldcourseexist(studentID,oldCourseID,department).getKey()) {
-			System.out.println("old course exists");
+		//	System.out.println("old course exists");
 			String sem=doesOldcourseexist(studentID,oldCourseID,department).getValue();
-			System.out.println(placeAvailableinNewCourse(studentID,newCourseID,department));
+		//	System.out.println(placeAvailableinNewCourse(studentID,newCourseID,department));
 			if(sem !=null && placeAvailableinNewCourse(studentID,newCourseID,department)) {
-				System.out.println("new course available");
+				//System.out.println("new course available");
 				synchronized (this) {
 					String enrolment=null;
 					boolean dropResult=dropCourse(studentID, oldCourseID);
@@ -444,7 +442,7 @@ public class Impl implements Addition{
 				countStr =(String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy2,Config.getConfig(fetchUDPPORT(d3.toUpperCase()))));
 				String checkCount = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy2,Config.getConfig(fetchUDPPORT(d2.toUpperCase()))));
 				if(checkCount!=null && Integer.parseInt(checkCount)>0) {
-					System.out.println("count for d3:"+checkCount);
+				//	System.out.println("count for d3:"+checkCount);
 					othrCount+=Integer.parseInt(checkCount);
 				}
 			} catch (Exception e) {
@@ -453,13 +451,13 @@ public class Impl implements Addition{
 			}
 			//countStr=udpClient.udpRequest(d2.toUpperCase(), dummy2);
 			if(countStr!=null && Integer.parseInt(countStr)>0) {
-				System.out.println("count for d2:"+countStr);
+				//System.out.println("count for d2:"+countStr);
 				othrCount+=Integer.parseInt(countStr);
 			}
-			System.out.println("count for d3:"+countStr);
+		//	System.out.println("count for d3:"+countStr);
 			if(countStr!=null && Integer.parseInt(countStr)>=0) {
 				othrCount+=Integer.parseInt(countStr);
-				System.out.println("othrCount:"+othrCount);
+			//	System.out.println("othrCount:"+othrCount);
 				if(othrCount>=2) {
 					logManager.writeLog("Failure due to excess of other dept courses");
 					return "Failure due to excess of other dept courses";
@@ -491,7 +489,7 @@ public class Impl implements Addition{
 				countStr =(String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy2,Config.getConfig(fetchUDPPORT(d2.toUpperCase()))));
 				String checkCount = (String) UDPUtilities.byteArrayToObject(udpClient.sendRequest(dummy2,Config.getConfig(fetchUDPPORT(d3.toUpperCase()))));
 				if(checkCount!=null && Integer.parseInt(checkCount)>0) {
-					System.out.println("count for d3:"+checkCount);
+				//	System.out.println("count for d3:"+checkCount);
 					othrCount+=Integer.parseInt(checkCount);
 				}
 			} catch (Exception e) {
@@ -500,13 +498,13 @@ public class Impl implements Addition{
 			}
 			//countStr=udpClient.udpRequest(d2.toUpperCase(), dummy2);
 			if(countStr!=null && Integer.parseInt(countStr)>0) {
-				System.out.println("count for d2:"+countStr);
+				//System.out.println("count for d2:"+countStr);
 				othrCount+=Integer.parseInt(countStr);
 			}
-			System.out.println("count for d3:"+countStr);
+		//	System.out.println("count for d3:"+countStr);
 			if(countStr!=null && Integer.parseInt(countStr)>=0) {
 				othrCount+=Integer.parseInt(countStr);
-				System.out.println("othrCount:"+othrCount);
+			//	System.out.println("othrCount:"+othrCount);
 				if(othrCount>=2) {
 					logManager.writeLog("Failure due to excess of other dept courses");
 					return "Failure due to excess of other dept courses";
@@ -532,33 +530,7 @@ public class Impl implements Addition{
 			}
 
 		}
-		/*if(courseID.toLowerCase().contains(d3)) {
-			countStr=udpClient.udpRequest(d2.toUpperCase(), dummy2);
-			if(udpClient.udpRequest(d2.toUpperCase(), dummy2)!=null && Integer.parseInt(udpClient.udpRequest(d2.toUpperCase(), dummy2))>0) {
-				System.out.println("count for d2:"+udpClient.udpRequest(d2.toUpperCase(), dummy2));
-				othrCount+=Integer.parseInt(udpClient.udpRequest(d3.toUpperCase(), dummy2));
-			}
-			System.out.println("count for d3:"+countStr);
-			if(countStr!=null && Integer.parseInt(countStr)>=0) {
-				othrCount+=Integer.parseInt(countStr);
-				System.out.println("othrCount:"+othrCount);
-				if(othrCount>=2) {
-					logManager.writeLog("Failure due to excess of other dept courses");
-					return "Failure due to excess of other dept courses";
-				}
-			}
-			response1=udpClient.udpRequest(d3.toUpperCase(), dummy);
-			//	System.out.println("Response from SOEN enrolment:"+response1+":"+countStr);
-			//	logManager.logger.log("Response from SOEN enrolment:"+response1+":"+countStr);
-			if(response1.toString().equals("success")) {
-				logManager.writeLog("Request Succeeded");
-				return "success";						
-			}
-			else {
-				logManager.writeLog("Request Failed");
-				return "Failure";
-			}
-		}*/
+		
 		if(courseID.toLowerCase().contains(d1)) {
 			response1=enrolCourseinowndept(studentID, courseID, semester);
 			if(response1.toString().equals("success")) {
@@ -727,7 +699,7 @@ public class Impl implements Addition{
 						courseMap.put("studentsinCourse", obj);
 						semMap.put(courseID, courseMap);
 						recordDetails.put(semester, semMap);
-						System.out.println("after enrolment:"+recordDetails);
+					//	System.out.println("after enrolment:"+recordDetails);
 						logManager.writeLog("Request Succeeded");
 						return "success";
 					}
@@ -752,7 +724,7 @@ public class Impl implements Addition{
 
 	public static int returnOtherdepartmentCount(String studentID, String department2) {
 		int count=0;
-		System.out.println("check the hashmap:"+recordDetails);
+		//System.out.println("check the hashmap:"+recordDetails);
 		for(Map.Entry<String, HashMap<String,HashMap<String,java.lang.Object>>> sMap:recordDetails.entrySet())
 		{
 			if(sMap.getValue() !=null) {
@@ -770,16 +742,16 @@ public class Impl implements Addition{
 				}
 			}
 		}
-		System.out.println(count);
+		//System.out.println(count);
 		return count;
 	}
 
 	public static  String getOwnClassSchedule(String studentId)  {
-		// TODO Auto-generated method stub
+		
 		//CompServer ser=new CompServer();
 		String overallSchedule=new String();
 
-		System.out.println("Ownclassschedule::"+recordDetails);
+	//	System.out.println("Ownclassschedule::"+recordDetails);
 		if(recordDetails!=null) {
 			for(Map.Entry<String, HashMap<String,HashMap<String,java.lang.Object>>> semMap:recordDetails.entrySet()) {
 				String classSchedule=new String();
@@ -812,7 +784,7 @@ public class Impl implements Addition{
 				overallSchedule+= " "+classSchedule;
 			}
 		}
-		System.out.println(overallSchedule);
+	//	System.out.println(overallSchedule);
 		return overallSchedule;
 	}
 
@@ -838,7 +810,7 @@ public class Impl implements Addition{
 			if(detMap!=null && detMap.containsKey("studentsinCourse")) {
 
 				Students=(List<String>) detMap.get("studentsinCourse");
-				System.out.println("Check1:"+Students);
+			//	System.out.println("Check1:"+Students);
 				if(Students.contains(studentID)) {
 					count++;
 				}
@@ -847,7 +819,7 @@ public class Impl implements Addition{
 		}
 		//sem course rate exceeded
 		if(count<3) {
-			System.out.println("Sem course count:"+count);
+			//System.out.println("Sem course count:"+count);
 			return true;
 		}
 
@@ -858,7 +830,7 @@ public class Impl implements Addition{
 
 
 	private boolean checkInOtherSems(String studentID, String courseID, String semester) {
-		// TODO Auto-generated method stub
+		
 
 		if(recordDetails!=null) {
 			for(Map.Entry<String, HashMap<String,HashMap<String,java.lang.Object>>> sMap:recordDetails.entrySet()) {
@@ -1019,20 +991,20 @@ public class Impl implements Addition{
 		String response1=new String();
 
 		response1=getOwnClassSchedule(studentId);
-		System.out.println("res1:"+response1);
+		//System.out.println("res1:"+response1);
 		String response2=new String();
 		response2=udpClient.udpRequest(d1, dummy);
-		System.out.println("res2:"+response2);
+		//System.out.println("res2:"+response2);
 		//	System.out.println("RESPONSE from SOEN schedule:"+response2);
 		String response3=new String();
 		response3=udpClient.udpRequest(d2, dummy);
-		System.out.println("res3:"+response3);
+		//System.out.println("res3:"+response3);
 		HashMap<String,ArrayList<String>> res1Map=scheduleUtility(response1, overallSchedule,fallList,winterList,summerList);
 
 		HashMap<String,ArrayList<String>> res2Map=scheduleUtility(response2, overallSchedule,fallList,winterList,summerList);
 		HashMap<String,ArrayList<String>> res3Map=scheduleUtility(response3, overallSchedule,fallList,winterList,summerList);
 
-		System.out.println("what happens now?"+overallSchedule);
+		//System.out.println("what happens now?"+overallSchedule);
 
 		return overallSchedule;
 	}
@@ -1048,7 +1020,7 @@ public class Impl implements Addition{
 				courses=words[1].replaceFirst(",", "");
 			}
 			if(sem.equalsIgnoreCase("fall")) {
-				System.out.println(fallList.size());
+				//System.out.println(fallList.size());
 				if(fallList.size()<3)
 					fallList.add(courses);
 				fullmap.put(sem, fallList);
@@ -1087,7 +1059,7 @@ public class Impl implements Addition{
 	}
 
 	public static String checkSpaceAvailability(String newCourseID) {
-		System.out.println("at availability check:"+recordDetails);
+		//System.out.println("at availability check:"+recordDetails);
 		if(recordDetails==null || recordDetails.keySet().size()==0) {
 			return "Failure";
 		}
@@ -1102,7 +1074,7 @@ public class Impl implements Addition{
 								if(eMap.getKey().equalsIgnoreCase("capacity")) {
 									if(eMap.getValue() !=null && !eMap.getValue().toString().isEmpty()) {
 										String capacity=eMap.getValue().toString();
-										System.out.println("capacity"+capacity);
+										//System.out.println("capacity"+capacity);
 										if(Integer.parseInt(capacity)>0) {
 											return "success";
 										}
@@ -1193,17 +1165,8 @@ public class Impl implements Addition{
 	}
 
 	public HashMap<String, HashMap<String, HashMap<String, Object>>> getRecordDetails() {
-		// TODO Auto-generated method stub
+		
 		return recordDetails;
 	}
 
-
-
-
-
-
-	
-
-
-	
 }

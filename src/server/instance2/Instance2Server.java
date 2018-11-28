@@ -1,20 +1,12 @@
-package server.instance2.ws;
+package server.instance2;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Scanner;
 
+import server.instance2.dcrsimpl.UDPServerThreads;
 
-import server.instance2.Impl.UDPServer;
-import server.instance2.Impl.UDPServerThreads;
-import sun.security.jca.GetInstance;
+public class Instance2Server {
 
-
-public class ServerThreads {
-
-	
-	
-	
 	public static void main(String[] args) throws Exception{
 
 
@@ -29,7 +21,7 @@ public class ServerThreads {
 
 		if(dept.equalsIgnoreCase("comp")) {
 
-			UDPServerThreads udpServer = new UDPServerThreads(dept);
+			UDPServerThreads udpServer = new UDPServerThreads("COMP");
 			udpServer.start();
 		}
 		else if(dept.equalsIgnoreCase("soen")) {

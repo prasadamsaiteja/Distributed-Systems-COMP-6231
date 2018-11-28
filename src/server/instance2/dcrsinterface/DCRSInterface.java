@@ -1,11 +1,11 @@
-package server.instance2.Interface;
+package server.instance2.dcrsinterface;
 
 
 
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 
-public interface Addition {
+public interface DCRSInterface {
 		
 	public boolean addCourse( String advisorId, String courseID, String semester, int capacity) ;
 	

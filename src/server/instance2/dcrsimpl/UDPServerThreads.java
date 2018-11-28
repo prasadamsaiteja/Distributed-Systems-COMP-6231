@@ -1,4 +1,4 @@
-package server.instance2.Impl;
+package server.instance2.dcrsimpl;
 
 
 import java.io.FileNotFoundException;
@@ -17,15 +17,15 @@ import generic.UDPUtilities;
 
 
 
-public class UDPServer{
+public class UDPServerThreads extends Thread{
 
 
 	static HashMap<String,Integer> serverRepo;
 	String dept;
 
-	public UDPServer() throws FileNotFoundException, IOException {
+	public UDPServerThreads(String dept) throws FileNotFoundException, IOException {
 		super();
-	//	this.dept = dept;
+		this.dept = dept;
 		serverRepo=new HashMap<>();
 		serverRepo.put("COMP", Config.getConfig("INSTANCE2_COMP_PORT"));
 		serverRepo.put("INSE",Config.getConfig("INSTANCE2_INSE_PORT"));
@@ -52,11 +52,11 @@ public class UDPServer{
 	Impl soenServer;
 	static String department;
 
-	public  void udpMain(String dept) {
+	public  void run() {
 		DatagramSocket COMP = null;
 		try {
 			department = dept.trim();
-			System.out.println(department+" started UDPServer");
+		//	System.out.println(department+" started UDPServer");
 			if(dept.contains("COMP")) {
 				COMP = new DatagramSocket(serverRepo.get(dept));
 			//	compServer=new Impl(dept);
@@ -80,7 +80,7 @@ public class UDPServer{
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 				COMP.receive(request);
 				String data = new String(request.getData(), 0, request.getLength());
-				System.out.println("Whats coming here:"+data);
+				//System.out.println("Whats coming here:"+data);
 				byte[] blah = processRequest(data, COMP,dept,recordDetails);
 				if (blah == null)
 					continue; // will reply to Front end manually
@@ -104,7 +104,7 @@ public class UDPServer{
 	}
 
 	private byte[] processRequest(String data, DatagramSocket socket,String dept,HashMap<String,HashMap<String,HashMap<String,Object>>> recordDetails) throws IOException {
-		System.out.println("Is it reaching here?");
+		//System.out.println("Is it reaching here?");
 		if (data.startsWith("SEQUENCER&")) {
 			processSequencerRequest(data.replace("SEQUENCER&", ""), socket);
 			return null;
@@ -183,7 +183,7 @@ public class UDPServer{
 		// TODO Auto-generated method stub
 		String bloop=new String();
 		
-		System.out.println("Data Fetched::"+buffer);
+		//System.out.println("Data Fetched::"+buffer);
 		if(buffer != null && buffer != null && !buffer.isEmpty() )
 		{
 			if(buffer.split(":")[0].equalsIgnoreCase("listcourse")){
@@ -223,7 +223,7 @@ public class UDPServer{
 				Impl obj=new Impl(dep.toUpperCase());
 				
 				bloop=String.valueOf(obj.returnDeptSemesterCountForStudent(studentId, sem));
-				System.out.println("sem count:" +bloop);
+				//System.out.println("sem count:" +bloop);
 			}
 			else if(buffer.split(":")[0].equalsIgnoreCase("classschedule")){
 
@@ -238,7 +238,7 @@ public class UDPServer{
 				String studentId=(buffer.split(":")[1]);
 				
 				bloop=String.valueOf(Impl.returnOtherdepartmentCount(studentId,dep));
-
+			//	System.out.println(bloop);
 			}
 			else if(buffer.split(":")[0].equalsIgnoreCase("dropcourse")){
 
