@@ -35,7 +35,7 @@ public interface EnrollmentInterface extends Remote {
 
 	HashMap<String, ArrayList<String>> getClassSchedule(String studentId) throws RemoteException;
 
-	SimpleEntry<Boolean, String> dropCourse(String studentId, String courseId) throws RemoteException;
+	boolean dropCourse(String studentId, String courseId) throws RemoteException;
 	
 	SimpleEntry<Boolean, String> swapCourse(String studentId,String newCourseId,String oldCourseId) throws RemoteException;
 

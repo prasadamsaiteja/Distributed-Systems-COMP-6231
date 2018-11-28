@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -45,6 +46,9 @@ public class FrontEndUtitlies {
 		if(UDPUtilities.byteArrayToObject(responses.get(0).getData()) instanceof SimpleEntry)
 			return getMajorityOfRepliesBoolean(responses, SimpleEntry.class);
 		
+		if(UDPUtilities.byteArrayToObject(responses.get(0).getData()) instanceof HashMap)
+			return getMajorityOfRepliesBoolean(responses, SimpleEntry.class);
+		
 		return null;
 	}
 	
@@ -60,12 +64,12 @@ public class FrontEndUtitlies {
 				
 				T currentPacketObject = (T) UDPUtilities.byteArrayToObject(datagramPacket.getData());
 				
-				if(majorityReplyCounter == 0){					
+				if(majorityReplyCounter == 0) {					
 					majorityReply = currentPacketObject;
-					majorityReplyCounter++;	
+					majorityReplyCounter++;
 				} else if(equals(majorityReply, currentPacketObject)) {			
 					majorityReplyCounter++;
-				} else{
+				} else {
 					majorityReplyCounter--;
 				}
 									
@@ -110,9 +114,22 @@ public class FrontEndUtitlies {
 		if(majorityReply instanceof Boolean)
 			return (boolean) majorityReply == (boolean) currentPacketObject;
 		
-		else if(majorityReply instanceof SimpleEntry)
-			return (SimpleEntry<Boolean, String>) majorityReply == (SimpleEntry<Boolean, String>) currentPacketObject;
-		
+		else if(majorityReply instanceof SimpleEntry) {
+			
+			boolean temp1 = ((SimpleEntry<Boolean, String>) majorityReply).getKey();
+			boolean temp2 = ((SimpleEntry<Boolean, String>) currentPacketObject).getKey();			
+			
+			return temp1 == temp2;
+			
+		} else if(majorityReply instanceof HashMap) {
+			
+			HashMap<String, Integer> temp1 = (HashMap<String, Integer>) majorityReply;
+			HashMap<String, Integer> temp2 = (HashMap<String, Integer>) currentPacketObject;
+			
+			return temp1.equals(temp2);	
+			
+		}
+					
 		return false;
 	}
 

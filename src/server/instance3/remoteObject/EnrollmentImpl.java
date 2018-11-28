@@ -26,6 +26,7 @@ import generic.Config;
 import generic.UDPUtilities;
 import server.instance3.util.Constants;
 import server.instance3.util.Department;
+import server.instance3.util.Semester;
 import server.instance3.util.Utils;
 
 /**
@@ -375,9 +376,9 @@ public class EnrollmentImpl implements EnrollmentInterface {
 			});
 		});
 		
-		for(Department dept : Department.values()) {
-			if(!schedule.containsKey(dept.toString())){
-				schedule.put(dept.toString(),new ArrayList<String>());
+		for(Semester semester : Semester.values()) {
+			if(!schedule.containsKey(semester.name())){
+				schedule.put(semester.name(),new ArrayList<String>());
 			}
 		}
 		
@@ -391,26 +392,23 @@ public class EnrollmentImpl implements EnrollmentInterface {
 	 * @see remoteObject.EnrollmentInterface#dropCourse(java.lang.String,
 	 * java.lang.String)
 	 */
-	public SimpleEntry<Boolean, String> dropCourse(String studentId, String courseId) throws RemoteException {
+	public boolean dropCourse(String studentId, String courseId) throws RemoteException {
 		Department courseDept = Department.valueOf(courseId.substring(0, 4).toUpperCase());
-		SimpleEntry<Boolean, String> result;
+		boolean result;
 		if (this.department == courseDept) {
 			result = dropCourseOnThisServer(studentId, courseId);
 		} else {
 			HashMap<String, String> data = new HashMap<>();
 			data.put(Constants.STUDENT_ID, studentId);
 			data.put(Constants.COURSE_ID, courseId);
-			result = (SimpleEntry<Boolean, String>) Utils
-					.byteArrayToObject(udpCommunication(courseDept, data, Constants.OP_DROP_COURSE));
+			result = (boolean) Utils.byteArrayToObject(udpCommunication(courseDept, data, Constants.OP_DROP_COURSE));
 		}
 
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_DROP_COURSE, Arrays.asList(studentId, courseId),
-				result.getKey(), result.getValue()));
-
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_DROP_COURSE, Arrays.asList(studentId, courseId), result, ""));
 		return result;
 	}
 
-	private SimpleEntry<Boolean, String> dropCourseOnThisServer(String studentId, String courseId) {
+	private boolean dropCourseOnThisServer(String studentId, String courseId) {
 		final Map<Boolean, String> temp = new HashMap<>();
 		if (deptDatabase.size() > 0) {
 			deptDatabase.forEach((sem, courses) -> {
@@ -440,9 +438,9 @@ public class EnrollmentImpl implements EnrollmentInterface {
 		}
 
 		if (temp.containsKey(true)) {
-			return new SimpleEntry<Boolean, String>(true, "Course Dropped.");
+			return true;
 		} else {
-			return new SimpleEntry<Boolean, String>(false, temp.get(false));
+			return false;
 		}
 	}
 
@@ -518,9 +516,9 @@ public class EnrollmentImpl implements EnrollmentInterface {
 
 			if (result2.getKey()) {
 				// drop other department course
-				result2 = dropCourse(studentId, oldCourseId);
+				boolean temp = dropCourse(studentId, oldCourseId);
 
-				if (result2.getKey()) {
+				if (temp) {
 					// enroll in new course
 					result2 = enrollmentForThisDepartment(studentId, newCourseId, semester);
 
@@ -586,7 +584,7 @@ public class EnrollmentImpl implements EnrollmentInterface {
 				socket.receive(request); // request received
 
 				
-				byte[] response = processRequest(request.getData(), socket);
+				byte[] response = processRequest(request, socket);
 				if (response == null)
 					continue; // will reply to Front end manually
 
@@ -606,23 +604,23 @@ public class EnrollmentImpl implements EnrollmentInterface {
 		}
 	}
 
-	private byte[] processRequest(byte[] data, DatagramSocket socket) {
+	private byte[] processRequest(DatagramPacket request, DatagramSocket socket) {
 		
-		String stringData = new String(data, 0, data.length);
+		String stringData = new String(request.getData(), 0, request.getLength());
 		if (stringData.startsWith("SEQUENCER&")) {
 			processSequencerRequest(stringData.replace("SEQUENCER&", ""), socket);
 			return null;
 		}
 
 		else
-			return processUDPRequest(data);
+			return processUDPRequest(request.getData());
 	}
 
 	private void processSequencerRequest(String receivedRequest, DatagramSocket socket) {
 
 		String[] temp = receivedRequest.split("&", 2);
 		// int sequenceNumber = Integer.parseInt(temp[0]);
-		String request[] = temp[1].split("&");
+		String request[] = temp[1].trim().split("&");
 		byte[] response = new byte[1000];
 		try {
 			switch (request[0]) {
@@ -630,7 +628,7 @@ public class EnrollmentImpl implements EnrollmentInterface {
 			case Constants.OP_ADD_COURSE:
 
 				response = UDPUtilities
-						.objectToByteArray(addCourse(request[1], request[2], request[3], Integer.parseInt(new String(request[4]).trim())));
+						.objectToByteArray(addCourse(request[1], request[2], request[3], Integer.parseInt(request[4])));
 
 				break;
 

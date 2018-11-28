@@ -10,14 +10,18 @@ public class Config {
 	private static Properties properties;
 	
 	public static int getConfig(String variable){
-		int value=-1;
+		
+		int value = -1;
+		
 		try {
 			
-		if(properties == null){
-			 properties = new Properties();
-			 properties.load(new FileInputStream("app.config"));
-		}
-		value = Integer.parseInt(properties.getProperty(variable));
+			if(properties == null){
+				 properties = new Properties();
+				 properties.load(new FileInputStream("app.config"));
+			}
+			
+			value = Integer.parseInt(properties.getProperty(variable));
+		
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
