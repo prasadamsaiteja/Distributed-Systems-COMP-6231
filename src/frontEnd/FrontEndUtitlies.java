@@ -71,7 +71,8 @@ public class FrontEndUtitlies {
 				} else {
 					majorityReplyCounter--;
 				}
-									
+								
+				//TODO ip address check
 				if(datagramPacket.getPort() == getPort(1, "COMP") || datagramPacket.getPort() == getPort(1, "SOEN") || datagramPacket.getPort() == getPort(1, "INSE")) {
 					instance1 = currentPacketObject;
 					System.out.println("Reply received from instance 1");
@@ -95,6 +96,8 @@ public class FrontEndUtitlies {
 			}
 			
 			else{
+				//TODO need to find which instance has the software issue
+				//TODO background thread to notify replica manager about the software failure
 				System.out.println("There is a software issue: " + majorityReplyCounter);
 				System.out.println("Response sent to client");
 				return majorityReply;
@@ -160,7 +163,8 @@ public class FrontEndUtitlies {
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			handler.cancel(true);
 			System.out.println("hardware failure");
-			//Let know of hardware failure
+			//TODO check which replica did not respond
+			//TODO background thread to notify replica manager about the hardware failure
 			return replies; //Other instances replies
 		}
 				
