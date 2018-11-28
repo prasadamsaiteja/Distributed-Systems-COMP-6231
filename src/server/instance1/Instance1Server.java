@@ -21,7 +21,7 @@ public class Instance1Server{
 	    inseUDPServer.setName("INSE");
 	    inseUDPServer.start();
 		
-		System.out.println("Insance1 Server initated");
+		System.out.println("Insance 1 Server initated");
 	}
 
 }

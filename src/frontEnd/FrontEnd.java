@@ -23,6 +23,7 @@ public class FrontEnd {
 	public static void main(String[] args) throws SocketException, FileNotFoundException, IOException {
 		
 		datagramSocket = new DatagramSocket(Config.getConfig("FRONTEND_PORT"));
+		datagramSocket.setSoTimeout(2000);
 		
 		Thread comp = new Thread(new FrontEndThread(args, "COMP"));
 		Thread soen = new Thread(new FrontEndThread(args, "SOEN"));
@@ -32,7 +33,7 @@ public class FrontEnd {
 		soen.start();
 		inse.start();
 		
-		System.out.println("Front End Started");
+		System.out.println("FrontEnd initated");
 		
 	}
 	

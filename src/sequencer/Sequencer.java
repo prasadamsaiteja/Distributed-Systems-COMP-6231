@@ -13,7 +13,7 @@ public class Sequencer extends Thread {
 	public void run() {
 		
 		byte buffer[] = new byte[1000];
-		System.out.println("Sequencer Initated");
+		System.out.println("Sequencer initated");
 		
 		try{
 			

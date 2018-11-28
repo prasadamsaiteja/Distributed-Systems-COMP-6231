@@ -158,6 +158,7 @@ public class FrontEndUtitlies {
 		try {			
 			return handler.get(2, TimeUnit.SECONDS);
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			handler.cancel(true);
 			System.out.println("hardware failure");
 			//Let know of hardware failure
 			return replies; //Other instances replies
@@ -169,12 +170,12 @@ public class FrontEndUtitlies {
 		
 		byte[] receivedBuffer = new byte[46595];
 		DatagramPacket replyPacket = new DatagramPacket(receivedBuffer, receivedBuffer.length);
-		FrontEnd.datagramSocket.receive(replyPacket);	
+		FrontEnd.datagramSocket.receive(replyPacket);
 		return replyPacket;
 		
 	}
 	
-	private static int getPort(int instance, String departmentName) throws FileNotFoundException, IOException {		
+	private static int getPort(int instance, String departmentName) throws FileNotFoundException, IOException {
 		return Config.getConfig("INSTANCE" + instance + "_" + departmentName + "_PORT");
 	}
 	

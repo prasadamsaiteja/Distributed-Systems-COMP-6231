@@ -33,7 +33,7 @@ public class Instance3Server {
 		getInstance("SOEN");
 		getInstance("INSE");
 		
-		System.out.println("Insance3 Server initated");
+		System.out.println("Insance 3 Server initated");
 	}
 	
 	public static EnrollmentInterface getInstance(String serverName) throws IOException {

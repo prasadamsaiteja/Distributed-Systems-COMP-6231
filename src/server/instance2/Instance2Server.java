@@ -1,35 +1,26 @@
-package server.instance2.ws;
+package server.instance2;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Scanner;
 
+import server.instance2.dcrsimpl.UDPServerThreads;
 
-import server.instance2.Impl.UDPServer;
-import server.instance2.Impl.UDPServerThreads;
-import sun.security.jca.GetInstance;
+public class Instance2Server {
 
-
-public class ServerThreads {
-
-	
-	
-	
 	public static void main(String[] args) throws Exception{
-
 
 		getInstance("COMP");
 		getInstance("SOEN");
 		getInstance("INSE");
 
-
+		System.out.println("Insance 2 Server initated");
 	}
 
 	public static void getInstance(String dept) throws FileNotFoundException, IOException {
 
 		if(dept.equalsIgnoreCase("comp")) {
 
-			UDPServerThreads udpServer = new UDPServerThreads(dept);
+			UDPServerThreads udpServer = new UDPServerThreads("COMP");
 			udpServer.start();
 		}
 		else if(dept.equalsIgnoreCase("soen")) {
