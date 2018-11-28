@@ -8,7 +8,6 @@ import java.net.InetAddress;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -145,7 +144,7 @@ public class FrontEndUtitlies {
 		        
 		    	int replyReceived = 0;
 		    	
-		    	while(replyReceived < 2) {						
+		    	while(replyReceived < 3) {						
 					DatagramPacket replyPacket = receiveReply();
 					replies.add(replyPacket);					
 					replyReceived++;
@@ -170,7 +169,7 @@ public class FrontEndUtitlies {
 		
 		byte[] receivedBuffer = new byte[46595];
 		DatagramPacket replyPacket = new DatagramPacket(receivedBuffer, receivedBuffer.length);
-		FrontEnd.datagramSocket.receive(replyPacket);		
+		FrontEnd.datagramSocket.receive(replyPacket);	
 		return replyPacket;
 		
 	}
