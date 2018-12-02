@@ -53,7 +53,7 @@ public class FrontEndUtitlies {
 	
 	private static <T> Object getMajorityOfRepliesBoolean(ArrayList<DatagramPacket> responses, Class<T> type) {
 		
-		T instance1, instance2, instance3;
+		T instance1, instance2, instance3, instance4;
 		T majorityReply = null;
 		int majorityReplyCounter = 0;
 		
@@ -86,8 +86,12 @@ public class FrontEndUtitlies {
 				else if(datagramPacket.getPort() == getPort(3, "COMP") || datagramPacket.getPort() == getPort(3, "SOEN") || datagramPacket.getPort() == getPort(3, "INSE")) {
 					instance3 = currentPacketObject;
 					System.out.println("Reply received from instance 3");
-				}
+				} 
 				
+				else if(datagramPacket.getPort() == getPort(4, "COMP") || datagramPacket.getPort() == getPort(4, "SOEN") || datagramPacket.getPort() == getPort(4, "INSE")) {
+					instance4 = currentPacketObject;
+					System.out.println("Reply received from instance 4");
+				}
 			}
 			
 			if(majorityReplyCounter == responses.size()) {
@@ -147,7 +151,7 @@ public class FrontEndUtitlies {
 		        
 		    	int replyReceived = 0;
 		    	
-		    	while(replyReceived < 3) {						
+		    	while(replyReceived < 2) {						
 					DatagramPacket replyPacket = receiveReply();
 					replies.add(replyPacket);					
 					replyReceived++;

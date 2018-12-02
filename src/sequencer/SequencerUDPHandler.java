@@ -31,11 +31,13 @@ public class SequencerUDPHandler {
 			DatagramPacket datagramPacket1 = new DatagramPacket(buffer, buffer.length, instanceInetAddress(1), getServerPortNumber(1));
 			DatagramPacket datagramPacket2 = new DatagramPacket(buffer, buffer.length, instanceInetAddress(2), getServerPortNumber(2));
 			DatagramPacket datagramPacket3 = new DatagramPacket(buffer, buffer.length, instanceInetAddress(3), getServerPortNumber(3));
+			DatagramPacket datagramPacket4 = new DatagramPacket(buffer, buffer.length, instanceInetAddress(4), getServerPortNumber(4));
 			
 			DatagramSocket socket= new DatagramSocket();
 			socket.send(datagramPacket1);
 			socket.send(datagramPacket2);
 			socket.send(datagramPacket3);
+			socket.send(datagramPacket4);
 			
 		} catch(Exception e){
 			e.printStackTrace();
