@@ -7,12 +7,12 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.AbstractMap.SimpleEntry;
 
-import generic.UDPUtilities;
-import generic.Config;
 import server.instance1.controller.Helper;
 import server.instance1.controller.rmi.DCRS;
 import server.instance1.data.Database;
-
+import utils.Config;
+import utils.Constants;
+import utils.UDPUtilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,7 +92,9 @@ public class UDPServer extends Thread {
 				case "GetCountOfEnrolledCourses":
 					SimpleEntry<Integer, Integer> getCountOfEnrolledCoursesResult = Helper.getCountOfEnrolledCourses(request[1], request[2]);
 					return UDPUtilities.objectToByteArray(getCountOfEnrolledCoursesResult);
-					
+				case Constants.OP_ISALIVE:
+					System.out.println("\n\n\n ---- got alive request----\n\n");
+					return String.valueOf(true).getBytes();
 			}
 
 		} catch(Exception exception) { exception.printStackTrace(); }

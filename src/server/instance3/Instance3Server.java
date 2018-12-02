@@ -9,12 +9,12 @@ package server.instance3;
 import java.io.File;
 import java.io.IOException;
 
-import generic.Config;
 import server.instance3.logging.MyLogger;
 import server.instance3.remoteObject.EnrollmentImpl;
 import server.instance3.remoteObject.EnrollmentInterface;
-import server.instance3.util.Constants;
 import server.instance3.util.Department;
+import utils.Config;
+import utils.Constants;
 
 /**
  * @author Amandeep Singh

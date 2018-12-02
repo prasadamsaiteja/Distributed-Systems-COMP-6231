@@ -11,8 +11,8 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import client.controller.Controller;
 import client.controller.data.Cache;
-import generic.corbaInterface.IDCRS;
-import generic.corbaInterface.IDCRSHelper;
+import utils.corbaInterface.IDCRS;
+import utils.corbaInterface.IDCRSHelper;
 
 public class Client {	
 

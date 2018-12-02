@@ -4,20 +4,25 @@
 * Professor - Rajagopalan Jayakumar
 * Software Failure Tolerant and Highly Available Distributed Course Registration System (DCRS)
 */
-package server.instance3.util;
+package utils;
 
 /**
- * Class of Constants
- * 
  * @author Amandeep Singh
- * @see <a href="www.linkedin.com/in/imamanrana" target="_blank">Profile</a>
- *
+ * @see <a href='https://www.linkedin.com/in/imamanrana/' target="_blank">Profile</a>
  */
 public class Constants {
-
-	public static final String ADVISOR_LOG_DIRECTORY = "./Logs/Client Logs/instance3/advisor/";
-	public static final String STUDENT_LOG_DIRECTORY = "./Logs/Client Logs/instance3/student/";
-	public static final String SERVER_LOG_DIRECTORY = "./Logs/Server Logs/instance3/";
+	
+	public static final String OP_HARDWARE_CRASH = "hardwareCrash";
+	public static final String OP_ISALIVE = "isAlive";
+	public static final String OP_GETSTATE = "getState";
+	public static final String OP_SETSTATE = "setState";
+	
+	
+	public static final String ADVISOR_LOG_DIRECTORY = "./Logs/ClientLogs/instance3/advisor/";
+	public static final String STUDENT_LOG_DIRECTORY = "./Logs/ClientLogs/instance3/student/";
+	public static final String SERVER_LOG_DIRECTORY = "./Logs/ServerLogs/instance3/";
+	public static final String UDP_LOG_DIRECTORY = "./Logs/UDP/";
+	public static final String RM_LOG_DIRECTORY = "./Logs/RM/";
 	public static final String UNDERSCORE = "_";
 	public static final String EMPTYSTRING = "";
 	public static final String CAPACITY = "capacity";
@@ -39,4 +44,5 @@ public class Constants {
 	public static final String OP_SWAP_COURSE = "swapCourse";
 	public static final int MAX_COURSE_TAKEN_BY_STUDENT = 3;
 	public static final int MAX_ELECTIVE_COURSES = 2;
+
 }

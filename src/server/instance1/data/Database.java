@@ -2,7 +2,7 @@ package server.instance1.data;
 
 import java.util.HashMap;
 
-import generic.Config;
+import utils.Config;
 
 public class Database {
 

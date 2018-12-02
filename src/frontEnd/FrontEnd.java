@@ -12,9 +12,9 @@ import org.omg.CosNaming.NamingContextExtHelper;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
-import generic.Config;
-import generic.corbaInterface.IDCRS;
-import generic.corbaInterface.IDCRSHelper;
+import utils.Config;
+import utils.corbaInterface.IDCRS;
+import utils.corbaInterface.IDCRSHelper;
 
 public class FrontEnd {
 

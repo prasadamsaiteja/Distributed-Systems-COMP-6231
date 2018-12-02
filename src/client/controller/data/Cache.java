@@ -1,6 +1,6 @@
 package client.controller.data;
 
-import generic.corbaInterface.IDCRS;
+import utils.corbaInterface.IDCRS;
 
 public class Cache {
 

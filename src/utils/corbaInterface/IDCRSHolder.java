@@ -1,4 +1,4 @@
-package generic.corbaInterface;
+package utils.corbaInterface;
 
 /**
 * corbaInterface/IDCRSHolder.java .
@@ -9,30 +9,30 @@ package generic.corbaInterface;
 
 public final class IDCRSHolder implements org.omg.CORBA.portable.Streamable
 {
-  public generic.corbaInterface.IDCRS value = null;
+  public utils.corbaInterface.IDCRS value = null;
 
   public IDCRSHolder ()
   {
   }
 
-  public IDCRSHolder (generic.corbaInterface.IDCRS initialValue)
+  public IDCRSHolder (utils.corbaInterface.IDCRS initialValue)
   {
     value = initialValue;
   }
 
   public void _read (org.omg.CORBA.portable.InputStream i)
   {
-    value = generic.corbaInterface.IDCRSHelper.read (i);
+    value = utils.corbaInterface.IDCRSHelper.read (i);
   }
 
   public void _write (org.omg.CORBA.portable.OutputStream o)
   {
-	  generic.corbaInterface.IDCRSHelper.write (o, value);
+	  utils.corbaInterface.IDCRSHelper.write (o, value);
   }
 
   public org.omg.CORBA.TypeCode _type ()
   {
-    return generic.corbaInterface.IDCRSHelper.type ();
+    return utils.corbaInterface.IDCRSHelper.type ();
   }
 
 }

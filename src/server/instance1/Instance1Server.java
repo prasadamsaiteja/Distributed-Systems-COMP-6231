@@ -1,7 +1,7 @@
 package server.instance1;
 
-import generic.Logger;
 import server.instance1.controller.socket.UDPServer;
+import utils.Logger;
 
 public class Instance1Server{
 
