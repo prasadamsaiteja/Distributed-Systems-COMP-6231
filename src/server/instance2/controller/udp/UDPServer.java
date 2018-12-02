@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import server.instance2.controller.DCRS;
-import generic.Config;
-import generic.UDPUtilities;
+import utils.Config;
+import utils.UDPUtilities;
 
 public class UDPServer extends Thread {
 

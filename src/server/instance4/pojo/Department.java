@@ -1,6 +1,6 @@
 package server.instance4.pojo;
 
-import generic.Config;
+import utils.Config;
 
 public enum Department {
 

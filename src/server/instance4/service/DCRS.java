@@ -16,8 +16,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-import generic.Config;
-import generic.UDPUtilities;
+import utils.Config;
+import utils.UDPUtilities;
 import server.instance3.util.Semester;
 import server.instance4.pojo.Constants;
 import server.instance4.pojo.Department;
