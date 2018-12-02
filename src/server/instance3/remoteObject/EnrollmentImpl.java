@@ -684,6 +684,7 @@ public class EnrollmentImpl implements EnrollmentInterface {
 	 * @param data
 	 * @return
 	 */
+	@SuppressWarnings(value = { "unchecked" })
 	private byte[] processUDPRequest(byte[] data) {
 
 		byte[] response = null;

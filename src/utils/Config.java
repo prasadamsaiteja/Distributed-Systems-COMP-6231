@@ -62,7 +62,7 @@ public class Config {
 	
 	
 	public static String getReverseMaping(int portNo) {
-		return reverseMap.get(Integer.valueOf(portNo));
+		return reverseMap.get(Integer.valueOf(portNo).toString());
 	}
 
 }

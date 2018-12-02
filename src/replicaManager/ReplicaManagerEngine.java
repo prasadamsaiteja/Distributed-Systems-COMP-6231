@@ -183,7 +183,7 @@ public class ReplicaManagerEngine implements Runnable {
 	private byte[] getDataFromWorkingReplicaManager() {
 
 		for (int i = 1; i <= 4; i++) {
-			if (i == instanceNo ||i==2)
+			if (i == instanceNo ||i==2||i==4)
 				continue;
 
 			byte[] reply = null;
@@ -211,7 +211,6 @@ public class ReplicaManagerEngine implements Runnable {
 		if (reply == null)
 			return false;
 		else {
-			LOGGER.info("---> "+new String(reply).trim());
 			return Boolean.valueOf(new String(reply).trim());
 		}
 	}
@@ -239,7 +238,7 @@ public class ReplicaManagerEngine implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * @param reply
 	 * @return 
@@ -265,5 +264,27 @@ public class ReplicaManagerEngine implements Runnable {
 		System.out.println("State Copied by RM");
 		
 		return true;
+	}
+	
+	
+	private void killServer() {
+		try {
+			switch(instanceNo) {
+				case 1:
+					Instance1Server.main(null);
+					break;
+				case 2:
+					//TODO
+					break;
+				case 3:
+					Instance3Server.main(null);
+					break;
+				case 4:
+					//TODO
+					break;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

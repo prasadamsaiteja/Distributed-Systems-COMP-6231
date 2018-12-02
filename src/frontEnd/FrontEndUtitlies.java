@@ -252,7 +252,7 @@ public class FrontEndUtitlies {
 			
 			Boolean b = (Boolean)instanceResponse.get(i);
 			if(majority.containsKey(b)) {
-				List<Integer> list = majority.get(i);
+				List<Integer> list = majority.get(b);
 				list.add(i);
 				majority.put(b, list);
 			}else {
@@ -425,7 +425,9 @@ public class FrontEndUtitlies {
 			System.out.println("Possible Hardware failure detected, notifying replica managers");
 			
 			IntStream.rangeClosed(1, 3).forEach(i -> {	
-				
+				if(i==2) {
+					
+				}else {
 				new Thread(new Runnable() {
 					public void run() {
 						try {
@@ -433,7 +435,7 @@ public class FrontEndUtitlies {
 						} catch(Exception ignored) {}
 					}
 				}).start();			
-			
+				}
 			});
 
 			// TODO check which replica did not respond
