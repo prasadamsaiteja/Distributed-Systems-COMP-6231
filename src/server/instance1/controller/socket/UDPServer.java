@@ -8,10 +8,12 @@ import java.net.SocketException;
 import java.util.AbstractMap.SimpleEntry;
 
 import server.instance1.controller.Helper;
-import server.instance1.controller.rmi.DCRS;
+import server.instance1.controller.corba.DCRS;
 import server.instance1.data.Database;
+import server.instance3.util.Utils;
 import utils.Config;
 import utils.Constants;
+import utils.Logger;
 import utils.UDPUtilities;
 
 import java.util.ArrayList;
@@ -34,9 +36,8 @@ public class UDPServer extends Thread {
 				byte[] receivedBuffer = new byte[1000];
 				DatagramPacket requestPacket = new DatagramPacket(receivedBuffer, receivedBuffer.length);
 				socket.receive(requestPacket);
-
-	            String request = new String(requestPacket.getData(), 0, requestPacket.getLength());
-	            byte[] responseBuffer = processRequest(request);
+	            
+	            byte[] responseBuffer = processRequest(requestPacket);
 	            if(responseBuffer == null)
 	            	continue; //will reply to Front end manually
 
@@ -53,7 +54,9 @@ public class UDPServer extends Thread {
 				
 	}
 	
-	private byte[] processRequest(String receivedRequest) {
+	private byte[] processRequest(DatagramPacket requestPacket) {
+		
+		String receivedRequest = new String(requestPacket.getData(), 0, requestPacket.getLength());
 		
 		if(receivedRequest.startsWith("SEQUENCER&")) {
 			processSequencerRequest(receivedRequest.replace("SEQUENCER&", ""));
@@ -61,15 +64,41 @@ public class UDPServer extends Thread {
 		}
 		
 		else 
-			return processUDPRequest(receivedRequest);
+			return processUDPRequest(requestPacket.getData());
 		
 	}
 	
-	private byte[] processUDPRequest(String receivedRequest) {
+	private byte[] processUDPRequest(byte[] requestByte) {
 		
-		try{
+		if(Utils.byteArrayToObject(requestByte) instanceof HashMap) {
+			HashMap<String, Object> request = (HashMap<String, Object>) Utils.byteArrayToObject(requestByte);
+			for (String key : request.keySet()) {
+				
+				switch(key) {
+				
+					case Constants.OP_GETSTATE:
+						Logger.log("A replica manager request instance copy");
+						return Helper.deepCopyInstance1State();
+						
+					case Constants.OP_SETSTATE:	
+						Helper.setState(request.get(key));
+						return String.valueOf(true).getBytes();
+						
+					case Constants.OP_ISALIVE:
+						Logger.log("Received Is Alive Request");
+						return String.valueOf(true).getBytes();
+
+				}				
+			}
+		}
 		
+		try{		
+		
+			String receivedRequest = new String(requestByte, 0, requestByte.length);
 			String[] request = receivedRequest.split("&");
+			
+			for (int i = 0; i < request.length; i++) 
+				request[i] = request[i].trim();
 			
 			switch(request[0]){
 			
@@ -92,9 +121,7 @@ public class UDPServer extends Thread {
 				case "GetCountOfEnrolledCourses":
 					SimpleEntry<Integer, Integer> getCountOfEnrolledCoursesResult = Helper.getCountOfEnrolledCourses(request[1], request[2]);
 					return UDPUtilities.objectToByteArray(getCountOfEnrolledCoursesResult);
-				case Constants.OP_ISALIVE:
-					System.out.println("\n\n\n ---- got alive request----\n\n");
-					return String.valueOf(true).getBytes();
+					
 			}
 
 		} catch(Exception exception) { exception.printStackTrace(); }

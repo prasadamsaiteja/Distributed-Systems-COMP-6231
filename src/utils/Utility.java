@@ -32,8 +32,7 @@ public class Utility {
 	 * @param deptDatabase
 	 * @return
 	 */
-	public static byte[] deepCopyInstance3State(
-			HashMap<String, HashMap<String, HashMap<String, Object>>> deptDatabase) {
+	public static byte[] deepCopyInstance3State(HashMap<String, HashMap<String, HashMap<String, Object>>> deptDatabase) {
 		
 		
 		Map<String, HashMap<String, HashMap<String, Object>>> copy = new HashMap<>();

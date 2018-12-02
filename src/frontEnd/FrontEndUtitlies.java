@@ -48,7 +48,7 @@ public class FrontEndUtitlies {
 			return getMajorityOfRepliesBoolean(responses, SimpleEntry.class);
 		
 		if(UDPUtilities.byteArrayToObject(responses.get(0).getData()) instanceof HashMap)
-			return getMajorityOfRepliesBoolean(responses, SimpleEntry.class);
+			return getMajorityOfRepliesBoolean(responses, HashMap.class);
 		
 		return null;
 	}
@@ -64,6 +64,7 @@ public class FrontEndUtitlies {
 			for (DatagramPacket datagramPacket : responses) {
 				
 				T currentPacketObject = (T) UDPUtilities.byteArrayToObject(datagramPacket.getData());
+				System.out.println(currentPacketObject.toString());
 				
 				if(majorityReplyCounter == 0) {					
 					majorityReply = currentPacketObject;
@@ -169,10 +170,20 @@ public class FrontEndUtitlies {
 			//return handler.get(5, TimeUnit.Seconds);
 			return handler.get(2, TimeUnit.HOURS);
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			
 			handler.cancel(true);
-			System.out.println("hardware failure");
-			IntStream.rangeClosed(1, 4).forEach(i -> {
-				UDPUtilities.udpCommunication(Config.getStringConfig("RM"+i+"_IP"),Config.getConfig("RM"+i+"_PORT"),null,Constants.OP_HARDWARE_CRASH,5000);
+			System.out.println("Possible Hardware failure detected, notifying replica managers");
+			
+			IntStream.rangeClosed(1, 3).forEach(i -> {	
+				
+				new Thread(new Runnable() {
+					public void run() {
+						try {
+							UDPUtilities.udpCommunication(Config.getStringConfig("RM"+i+"_IP"), Config.getConfig("RM"+i+"_PORT"), null, Constants.OP_HARDWARE_CRASH, -1);
+						} catch(Exception ignored) {}
+					}
+				}).start();			
+			
 			});
 			
 			// TODO check which replica did not respond

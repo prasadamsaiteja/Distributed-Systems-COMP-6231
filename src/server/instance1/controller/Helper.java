@@ -1,14 +1,21 @@
 package server.instance1.controller;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
+
+import com.sun.xml.internal.ws.util.StringUtils;
+
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import server.instance1.controller.socket.UDPClient;
 import server.instance1.data.Database;
+import server.instance1.data.Database.Terms;
+import utils.Constants;
 import utils.Logger;
+import utils.UDPUtilities;
 
 public class Helper {
 
@@ -247,6 +254,95 @@ public class Helper {
 		}
 		
 		return result;		
+	}
+
+	public static byte[] deepCopyInstance1State() {
+		
+		HashMap<String, HashMap<String, HashMap<String, Object>>> deepCopyDatabase = new HashMap<>();	
+		HashMap<Terms, HashMap<String, HashMap<String, String>>> database = Database.getInstance().courses;
+		
+		for (Entry<Terms, HashMap<String, HashMap<String, String>>> semester : database.entrySet()) {
+			
+			HashMap<String, HashMap<String, String>> courses = semester.getValue();
+			HashMap<String, HashMap<String, Object>> deepCopyCourses = new HashMap<>();
+			
+			for (Entry<String, HashMap<String, String>> course : courses.entrySet()) {
+				
+				HashMap<String, String> courseProperties = course.getValue();
+				HashMap<String, Object> deepCopyCourseProperties = new HashMap<>();
+					
+				for (Entry<String, String> courseProperty : courseProperties.entrySet()) {
+				
+					if(courseProperty.getKey().equals("max_capacity"))
+						deepCopyCourseProperties.put(Constants.CAPACITY, Integer.parseInt(courseProperty.getValue()));
+					
+					else if(courseProperty.getKey().equals("capacity"))
+						deepCopyCourseProperties.put(Constants.STUDENTS_ENROLLED, Integer.parseInt(courseProperty.getValue()));
+					
+					else if(courseProperty.getKey().equals("enrolled_students")) {
+						String[] students = courseProperty.getValue().split("&");
+						HashSet<String> set = new HashSet<>();
+						for (String student : students) 
+							set.add(student);
+						
+						deepCopyCourseProperties.put(Constants.STUDENT_IDS, set); //Course properties
+					}
+				}
+				
+				deepCopyCourses.put(new String(course.getKey()), deepCopyCourseProperties); // Course
+				
+			}
+			
+			deepCopyDatabase.put(new String(semester.getKey().toString()), deepCopyCourses); //Term
+			
+		}
+		
+		return UDPUtilities.objectToByteArray(deepCopyDatabase);
+		
+	}
+
+	
+	public static void setState(Object object) {
+	
+		HashMap<String, HashMap<String, HashMap<String, Object>>> data = (HashMap<String, HashMap<String, HashMap<String, Object>>>) object;
+		HashMap<Terms, HashMap<String, HashMap<String, String>>> database = new HashMap<>();
+		
+		for (Entry<String, HashMap<String, HashMap<String, Object>>> semester : data.entrySet()) {
+			
+			HashMap<String, HashMap<String, Object>> courses = semester.getValue();
+			HashMap<String, HashMap<String, String>> databaseCourses = new HashMap<>();
+			
+			for (Entry<String, HashMap<String, Object>> course : courses.entrySet()) {
+				
+				HashMap<String, Object> courseProperties = course.getValue();
+				HashMap<String, String> databaseCourseProperties = new HashMap<>();
+					
+				for (Entry<String, Object> courseProperty : courseProperties.entrySet()) {
+				
+					if(courseProperty.getKey().equals(Constants.CAPACITY))
+						databaseCourseProperties.put("max_capacity", String.valueOf(courseProperty.getValue()));
+					
+					else if(courseProperty.getKey().equals(Constants.STUDENTS_ENROLLED))
+						databaseCourseProperties.put("capacity", String.valueOf(courseProperty.getValue()));
+					
+					else if(courseProperty.getKey().equals("enrolled_students")) {
+						HashSet<String> set = (HashSet<String>) courseProperty.getValue();
+						String students = String.join("&", set);
+						
+						databaseCourseProperties.put(Constants.STUDENT_IDS, students); //Course properties
+					}
+				}
+				
+				databaseCourses.put(new String(course.getKey()), databaseCourseProperties); // Course
+				
+			}
+			
+			database.put(Database.Terms.valueOf(semester.getKey()), databaseCourses); //Term
+			
+		}
+		
+		Database.setDatabase(database);
+				
 	}
 	
 }

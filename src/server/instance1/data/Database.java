@@ -87,5 +87,18 @@ public class Database {
 
 		return null;
 	}
+
+	public static void setDatabase(HashMap<Terms, HashMap<String, HashMap<String, String>>> database) {
+		
+		if(Thread.currentThread().getName().equals("COMP"))
+			compInstance.courses = database;
+		
+		else if(Thread.currentThread().getName().equals("SOEN"))
+			soenInstance.courses = database;
+		
+		else if(Thread.currentThread().getName().equals("INSE"))
+			inseInstance.courses = database;
+		
+	}
 		
 }

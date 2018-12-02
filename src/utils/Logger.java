@@ -16,7 +16,7 @@ public class Logger {
 	
 	public static boolean isServer = false;
 
-	private static void log(String logStatement) {
+	public static void log(String logStatement) {
 		
 		String time = new SimpleDateFormat("[HH:mm:ss dd/MM/yyyy]").format(new java.util.Date()) + " "; 
 		

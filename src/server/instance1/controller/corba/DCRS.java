@@ -1,4 +1,4 @@
-package server.instance1.controller.rmi;
+package server.instance1.controller.corba;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;

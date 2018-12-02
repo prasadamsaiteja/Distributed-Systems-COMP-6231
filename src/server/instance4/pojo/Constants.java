@@ -8,6 +8,11 @@ package server.instance4.pojo;
  */
 public final class Constants {
 
+	public static final String OP_HARDWARE_CRASH = "hardwareCrash";
+	public static final String OP_ISALIVE = "isAlive";
+	public static final String OP_GETSTATE = "getState";
+	public static final String OP_SETSTATE = "setState";
+	
 	public static final String ADVISOR_LOGS_DIRECTORY = "src/main/resources/logs/advisor/";
 	public static final String STUDENT_LOGS_DIRECTORY = "src/main/resources/logs/student/";
 	public static final String SERVER_LOGS_DIRECTORY = "src/main/resources/logs/server/";

@@ -29,12 +29,12 @@ public class Test {
 	private static void testHardWareFailure() {
 		//inform RM's
 		//TODO change rangeClosed
-		IntStream.rangeClosed(1, 1).forEach(i -> {
+		IntStream.rangeClosed(3, 3).forEach(i -> {
 			UDPUtilities.udpCommunication(Config.getStringConfig("RM"+i+"_IP"),Config.getConfig("RM"+i+"_PORT"),null,Constants.OP_HARDWARE_CRASH,0);
 		});
 		
-		byte[] reply = UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + 1 + "_IP"),
-				Config.getConfig("INSTANCE" + 1 + "_COMP_PORT"), null, Constants.OP_ISALIVE,1000);
+		byte[] reply = UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + 3 + "_IP"),
+				Config.getConfig("INSTANCE" + 3 + "_COMP_PORT"), null, Constants.OP_ISALIVE,1000);
 		System.out.println(" is replica1 instantiated : "+new String(reply));
 		
 		

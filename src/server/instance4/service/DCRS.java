@@ -604,6 +604,19 @@ public class DCRS {
 						info.get(Constants.NEW_COURSE_ID), info.get(Constants.OLD_COURSE_ID),
 						info.get(Constants.OLD_COURSE_DEPT), info.get(Constants.SEMESTER)));
 				break;
+				
+			case Constants.OP_GETSTATE:
+				response = getState();
+				break;
+			case Constants.OP_SETSTATE:
+				HashMap<String, HashMap<String, HashMap<String, Object>>> temp = (HashMap<String, HashMap<String, HashMap<String, Object>>>) request.get(key);
+				setState(temp);
+				response = String.valueOf(true).getBytes();
+				break;
+			case Constants.OP_ISALIVE:
+				LOGGER.info("\n\n\n\n GOT IT ALIVE REQUEST\n\n\n\n");
+				response = String.valueOf(true).getBytes();
+				break;
 			}
 		}
 
@@ -780,4 +793,16 @@ public class DCRS {
 		return response;
 	}
 
+	public byte[] getState() {
+		return utils.Utility.deepCopyInstance3State(_departmentDatabase);
+	}
+
+	/* (non-Javadoc)
+	 * @see server.instance3.remoteObject.EnrollmentInterface#setState(byte[])
+	 */
+	public void setState(HashMap<String, HashMap<String, HashMap<String, Object>>> data) {
+		this._departmentDatabase = data;
+		System.out.println(this._departmentDatabase.toString());
+	}
+	
 }

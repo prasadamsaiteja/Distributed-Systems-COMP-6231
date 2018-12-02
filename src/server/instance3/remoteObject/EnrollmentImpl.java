@@ -718,8 +718,9 @@ public class EnrollmentImpl implements EnrollmentInterface {
 				response = getState();
 				break;
 			case Constants.OP_SETSTATE:
-				setState(data);
-				response = null;
+				HashMap<String, HashMap<String, HashMap<String, Object>>> temp = (HashMap<String, HashMap<String, HashMap<String, Object>>>) request.get(key);
+				setState(temp);
+				response = String.valueOf(true).getBytes();
 				break;
 			case Constants.OP_ISALIVE:
 				LOGGER.info("\n\n\n\n GOT IT ALIVE REQUEST\n\n\n\n");
@@ -869,8 +870,9 @@ public class EnrollmentImpl implements EnrollmentInterface {
 	 * @see server.instance3.remoteObject.EnrollmentInterface#setState(byte[])
 	 */
 	@Override
-	public void setState(byte[] data) {
-		this.deptDatabase = (HashMap<String, HashMap<String, HashMap<String, Object>>>)UDPUtilities.byteArrayToObject(data);
+	public void setState(HashMap<String, HashMap<String, HashMap<String, Object>>> data) {
+		this.deptDatabase = data;
+		System.out.println(this.deptDatabase.toString());
 	}
 
 }

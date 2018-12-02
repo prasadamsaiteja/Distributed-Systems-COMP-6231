@@ -44,6 +44,7 @@ public interface EnrollmentInterface extends Remote {
 	}
 	
 	byte[] getState();
-	void setState(byte[] data);
+
+	void setState(HashMap<String, HashMap<String, HashMap<String, Object>>> data);
 
 }
