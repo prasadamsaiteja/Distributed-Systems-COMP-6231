@@ -114,7 +114,9 @@ public class ReplicaManager implements Runnable {
 					response = new String("true").getBytes();
 				else
 					response = null;
-				
+				break;
+			case Constants.OP_SOFTWARE_CRASH:
+				response = Integer.valueOf(performSoftwareCrashRecovery()).toString().getBytes();
 				break;
 			default:
 				LOGGER.info("NO HANDLER FOR UDP Socket call for method[" + key + "] with parameters[" + request.get(key) + "]");
@@ -122,6 +124,23 @@ public class ReplicaManager implements Runnable {
 		}
 
 		return response;
+	}
+
+	/**
+	 * @return
+	 */
+	private int performSoftwareCrashRecovery() {
+		
+		this.isAlive = false;
+		
+		instantiateNewServer();
+		byte[] reply = getDataFromWorkingReplicaManager();
+		boolean copy = copyState(reply);
+		if(copy==true)
+			return instanceNo;
+		else
+			return -1;
+		
 	}
 
 	/**

@@ -6,6 +6,7 @@
 */
 package server.instance3.remoteObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import server.instance3.logging.MyLogger;
 import server.instance3.util.Department;
 import server.instance3.util.Semester;
 import server.instance3.util.Utils;
@@ -51,10 +53,11 @@ public class EnrollmentImpl implements EnrollmentInterface {
 	 * 
 	 * @param dept
 	 */
-	public EnrollmentImpl(String dept) {
+	public EnrollmentImpl(String dept, String logFile) {
 		this.department = Department.valueOf(dept);
 		deptDatabase = new HashMap<>();
 		this.rl = new ReentrantLock(true); // fair reentrant lock
+		setupLogging(logFile);
 	}
 
 	/*
@@ -376,13 +379,13 @@ public class EnrollmentImpl implements EnrollmentInterface {
 				}
 			});
 		});
-		
-		for(Semester semester : Semester.values()) {
-			if(!schedule.containsKey(semester.name())){
-				schedule.put(semester.name(),new ArrayList<String>());
+
+		for (Semester semester : Semester.values()) {
+			if (!schedule.containsKey(semester.name())) {
+				schedule.put(semester.name(), new ArrayList<String>());
 			}
 		}
-		
+
 		rl.unlock();
 		return schedule;
 	}
@@ -405,7 +408,8 @@ public class EnrollmentImpl implements EnrollmentInterface {
 			result = (boolean) Utils.byteArrayToObject(udpCommunication(courseDept, data, Constants.OP_DROP_COURSE));
 		}
 
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_DROP_COURSE, Arrays.asList(studentId, courseId), result, ""));
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_DROP_COURSE, Arrays.asList(studentId, courseId),
+				result, ""));
 		return result;
 	}
 
@@ -584,7 +588,6 @@ public class EnrollmentImpl implements EnrollmentInterface {
 				// Server waits for the request to come
 				socket.receive(request); // request received
 
-				
 				byte[] response = processRequest(request, socket);
 				if (response == null)
 					continue; // will reply to Front end manually
@@ -606,7 +609,7 @@ public class EnrollmentImpl implements EnrollmentInterface {
 	}
 
 	private byte[] processRequest(DatagramPacket request, DatagramSocket socket) {
-		
+
 		String stringData = new String(request.getData(), 0, request.getLength());
 		if (stringData.startsWith("SEQUENCER&")) {
 			processSequencerRequest(stringData.replace("SEQUENCER&", ""), socket);
@@ -715,10 +718,10 @@ public class EnrollmentImpl implements EnrollmentInterface {
 						info.get(Constants.OLD_COURSE_DEPT), info.get(Constants.SEMESTER)));
 				break;
 			case Constants.OP_GETSTATE:
-				response = getState();
+				response = getInternalState();
 				break;
 			case Constants.OP_SETSTATE:
-				setState(data);
+				setInternalState(data);
 				response = null;
 				break;
 			case Constants.OP_ISALIVE:
@@ -727,7 +730,7 @@ public class EnrollmentImpl implements EnrollmentInterface {
 				break;
 			default:
 				LOGGER.info("UDP Requeset not understood");
-					break;
+				break;
 
 			}
 		}
@@ -857,20 +860,44 @@ public class EnrollmentImpl implements EnrollmentInterface {
 		return response;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see server.instance3.remoteObject.EnrollmentInterface#getState()
 	 */
 	@Override
-	public byte[] getState() {
+	public byte[] getInternalState() {
 		return Utility.deepCopyInstance3State(deptDatabase);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see server.instance3.remoteObject.EnrollmentInterface#setState(byte[])
 	 */
 	@Override
-	public void setState(byte[] data) {
-		this.deptDatabase = (HashMap<String, HashMap<String, HashMap<String, Object>>>)UDPUtilities.byteArrayToObject(data);
+	public void setInternalState(byte[] data) {
+		this.deptDatabase = (HashMap<String, HashMap<String, HashMap<String, Object>>>) UDPUtilities
+				.byteArrayToObject(data);
+	}
+
+	/**
+	 * Logging setup for COMP server
+	 * 
+	 * @throws IOException
+	 */
+	private static void setupLogging(String fileName) {
+		try {
+			File files = new File(Constants.SERVER_LOG_DIRECTORY + "instance3");
+			if (!files.exists())
+				files.mkdirs();
+			files = new File(Constants.SERVER_LOG_DIRECTORY + "instance3/" + fileName);
+			if (!files.exists())
+				files.createNewFile();
+			MyLogger.setup(files.getAbsolutePath());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

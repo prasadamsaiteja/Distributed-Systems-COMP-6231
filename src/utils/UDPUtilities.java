@@ -2,7 +2,6 @@ package utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,7 +13,6 @@ import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import server.instance3.logging.MyLogger;
 import server.instance3.util.Utils;
 
 public class UDPUtilities {

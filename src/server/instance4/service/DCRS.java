@@ -5,23 +5,23 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-import utils.Config;
-import utils.UDPUtilities;
 import server.instance3.util.Semester;
-import server.instance4.pojo.Constants;
 import server.instance4.pojo.Department;
 import server.instance4.pojo.Utility;
+import utils.Config;
+import utils.Constants;
+import utils.UDPUtilities;
 
 public class DCRS {
 
@@ -86,7 +86,7 @@ public class DCRS {
 		// releasing the lock
 		_lock.unlock();
 
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OPERATION_ADD_COURSE,
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_ADD_COURSE,
 				Arrays.asList(advisorId, courseId, semester, capacity), status, msg));
 
 		return status;
@@ -122,7 +122,7 @@ public class DCRS {
 			msg = semester + " semester doesn't have any course yet.";
 		}
 
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OPERATION_REMOVE_COURSE,
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_REMOVE_COURSE,
 				Arrays.asList(advisorId, courseId, semester), status, msg));
 
 		return status;
@@ -144,11 +144,11 @@ public class DCRS {
 		for (Department dept : Department.values()) {
 			if (dept != _department) {
 				result.putAll((HashMap<String, Integer>) Utility.byteArrayToObject(
-						udpCommunication(dept, semester, Constants.OPERATION_LIST_COURSE_AVAILABILITY)));
+						udpCommunication(dept, semester, Constants.OP_LIST_COURSE_AVAILABILITY)));
 			}
 		}
 
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OPERATION_LIST_COURSE_AVAILABILITY,
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_LIST_COURSE_AVAILABILITY,
 				Arrays.asList(advisorId, semester), result != null, result));
 
 		return result;
@@ -188,9 +188,9 @@ public class DCRS {
 
 		// student already enrolled in 3 courses
 		if (studentSchedule.containsKey(semester)
-				&& studentSchedule.get(semester).size() >= Constants.MAX_COURSES_TAKEN_BY_STUDENT) {
+				&& studentSchedule.get(semester).size() >= Constants.MAX_COURSE_TAKEN_BY_STUDENT) {
 			status = false;
-			msg = studentId + " is already enrolled in " + Constants.MAX_COURSES_TAKEN_BY_STUDENT + " courses "
+			msg = studentId + " is already enrolled in " + Constants.MAX_COURSE_TAKEN_BY_STUDENT + " courses "
 					+ studentSchedule.get(semester) + " for this " + semester + " semester.";
 			return (new SimpleEntry<Boolean, String>(status, msg));
 		}
@@ -236,7 +236,7 @@ public class DCRS {
 						data.put(Constants.SEMESTER, semester);
 
 						result = (SimpleEntry<Boolean, String>) Utility.byteArrayToObject(
-								udpCommunication(courseDept, data, Constants.OPERATION_ENROL_COURSE));
+								udpCommunication(courseDept, data, Constants.OP_ENROL_COURSE));
 					}
 				}
 			}
@@ -248,7 +248,7 @@ public class DCRS {
 		if (result == null)
 			result = new SimpleEntry<Boolean, String>(status, msg);
 
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OPERATION_ENROL_COURSE,
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_ENROL_COURSE,
 				Arrays.asList(studentId, courseId, semester), result.getKey(), result.getValue()));
 
 		return result;
@@ -305,7 +305,7 @@ public class DCRS {
 			if (dept != _department) {
 
 				HashMap<String, ArrayList<String>> deptSchedule = (HashMap<String, ArrayList<String>>) Utility
-						.byteArrayToObject(udpCommunication(dept, studentId, Constants.OPERATION_GET_CLASS_SCHEDULE));
+						.byteArrayToObject(udpCommunication(dept, studentId, Constants.OP_GET_CLASS_SCHEDULE));
 
 				for (String semester : deptSchedule.keySet()) {
 					if (schedule.containsKey(semester)) {
@@ -316,7 +316,7 @@ public class DCRS {
 				}
 			}
 		}
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OPERATION_GET_CLASS_SCHEDULE, Arrays.asList(studentId),
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_GET_CLASS_SCHEDULE, Arrays.asList(studentId),
 				schedule != null, schedule));
 
 		return schedule;
@@ -364,10 +364,10 @@ public class DCRS {
 			data.put(Constants.STUDENT_ID, studentId);
 			data.put(Constants.COURSE_ID, courseId);
 			result = (SimpleEntry<Boolean, String>) Utility
-					.byteArrayToObject(udpCommunication(courseDept, data, Constants.OPERATION_DROP_COURSE));
+					.byteArrayToObject(udpCommunication(courseDept, data, Constants.OP_DROP_COURSE));
 		}
 
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OPERATION_DROP_COURSE,
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_DROP_COURSE,
 				Arrays.asList(studentId, courseId), result.getKey(), result.getValue()));
 		return result.getKey();
 	}
@@ -479,12 +479,12 @@ public class DCRS {
 
 					if (result2.getKey()) {
 						status = true;
-						msg = Constants.OPERATION_SWAP_COURSE + " successfully";
+						msg = Constants.OP_SWAP_COURSE + " successfully";
 					} else {
 						// ROLLBACK
 						enrolCourse(studentId, oldCourseId, semester);
 						status = true;
-						msg = Constants.OPERATION_SWAP_COURSE + " successfully";
+						msg = Constants.OP_SWAP_COURSE + " successfully";
 					}
 				} else {
 					status = result2.getKey();
@@ -508,12 +508,12 @@ public class DCRS {
 			data.put(Constants.SEMESTER, semester);
 
 			result2 = (SimpleEntry<Boolean, String>) Utility
-					.byteArrayToObject(udpCommunication(newCourseDept, data, Constants.OPERATION_SWAP_COURSE));
+					.byteArrayToObject(udpCommunication(newCourseDept, data, Constants.OP_SWAP_COURSE));
 			status = result2.getKey();
 			msg = result2.getValue();
 		}
 
-		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OPERATION_SWAP_COURSE,
+		LOGGER.info(String.format(Constants.LOG_MSG, Constants.OP_SWAP_COURSE,
 				Arrays.asList(studentId, newCourseId, oldCourseId), status, msg));
 
 		return new SimpleEntry<Boolean, String>(status, msg);
@@ -580,25 +580,25 @@ public class DCRS {
 
 			LOGGER.info("Received UDP Socket call for method[" + key + "] with parameters[" + request.get(key) + "]");
 			switch (key) {
-			case Constants.OPERATION_LIST_COURSE_AVAILABILITY:
+			case Constants.OP_LIST_COURSE_AVAILABILITY:
 				String semester = (String) request.get(key);
 				response = Utility.objectToByteArray(listCourseAvailabilityForThisServer(semester));
 				break;
-			case Constants.OPERATION_ENROL_COURSE:
+			case Constants.OP_ENROL_COURSE:
 				HashMap<String, String> info = (HashMap<String, String>) request.get(key);
 				response = Utility.objectToByteArray(enrollmentForThisDepartment(info.get(Constants.STUDENT_ID),
 						info.get(Constants.COURSE_ID), info.get(Constants.SEMESTER)));
 				break;
-			case Constants.OPERATION_GET_CLASS_SCHEDULE:
+			case Constants.OP_GET_CLASS_SCHEDULE:
 				String studentId = (String) request.get(key);
 				response = Utility.objectToByteArray(getClassScheduleThisServer(studentId));
 				break;
-			case Constants.OPERATION_DROP_COURSE:
+			case Constants.OP_DROP_COURSE:
 				info = (HashMap<String, String>) request.get(key);
 				response = Utility.objectToByteArray(
 						dropCourseOnThisServer(info.get(Constants.STUDENT_ID), info.get(Constants.COURSE_ID)));
 				break;
-			case Constants.OPERATION_SWAP_COURSE:
+			case Constants.OP_SWAP_COURSE:
 				info = (HashMap<String, String>) request.get(key);
 				response = Utility.objectToByteArray(atomicSwapOnCurrentServer(info.get(Constants.STUDENT_ID),
 						info.get(Constants.NEW_COURSE_ID), info.get(Constants.OLD_COURSE_ID),
@@ -679,19 +679,19 @@ public class DCRS {
 				data.put(Constants.STUDENT_ID, studentId);
 				data.put(Constants.COURSE_ID, oldCourseId);
 				result = (SimpleEntry<Boolean, String>) Utility.byteArrayToObject(
-						udpCommunication(Department.valueOf(oldCourseDept), data, Constants.OPERATION_DROP_COURSE));
+						udpCommunication(Department.valueOf(oldCourseDept), data, Constants.OP_DROP_COURSE));
 
 				if (result.getKey()) {
 					result = enrollmentForThisDepartment(studentId, newCourseId, semester);
 
 					if (result.getKey()) {
 						status = true;
-						msg = Constants.OPERATION_SWAP_COURSE + " successfully";
+						msg = Constants.OP_SWAP_COURSE + " successfully";
 					} else {
 						// ROLLBACK
 						enrolCourse(studentId, oldCourseId, semester);
 						status = false;
-						msg = Constants.OPERATION_SWAP_COURSE + " unsuccessful";
+						msg = Constants.OP_SWAP_COURSE + " unsuccessful";
 					}
 				} else {
 					status = result.getKey();
@@ -778,6 +778,15 @@ public class DCRS {
 		}
 
 		return response;
+	}
+	
+	public byte[] getInternalState() {
+		return utils.Utility.deepCopyInstance4State(_departmentDatabase);
+	}
+
+	public void setInternalState(byte[] data) {
+		this._departmentDatabase = (HashMap<String, HashMap<String, HashMap<String, Object>>>) UDPUtilities
+				.byteArrayToObject(data);
 	}
 
 }
