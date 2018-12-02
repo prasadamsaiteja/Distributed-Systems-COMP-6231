@@ -1,10 +1,10 @@
 package server.instance2.controller;
 
 import server.instance2.controller.udp.UDPClient;
+import server.instance2.controller.udp.UDPServer;
 import server.instance2.logging.LogManager;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -14,16 +14,16 @@ import java.util.Map;
 
 import java.util.Map.Entry;
 
-public class DCRS {
+public class DCRS extends UDPServer {
 
 	private static LogManager logManager = null;
 
-	private static String department;
-	public static HashMap<String, HashMap<String, HashMap<String, java.lang.Object>>> recordDetails = new HashMap<>();
-	public static HashMap<String, String> studentRecords;
+	private String department;
+	public HashMap<String, HashMap<String, HashMap<String, java.lang.Object>>> recordDetails = new HashMap<>();
+	public HashMap<String, String> studentRecords;
 
-	public DCRS(String dept) throws RemoteException, IOException {
-		super();
+	public DCRS(String dept) throws IOException {
+		super(dept);
 		department = dept;
 		logManager = new LogManager(dept.toUpperCase() + ".log");
 
@@ -33,7 +33,7 @@ public class DCRS {
 		return recordDetails;
 	}
 
-	public synchronized static boolean addCourse(String courseID, String semester, String capacity) {
+	public synchronized boolean addCourse(String courseID, String semester, String capacity) {
 		logManager.writeLog("REQUEST TYPE:addcourse" + "parameters:" + courseID + "," + semester + "," + capacity);
 		if (recordDetails == null) {
 			HashMap<String, HashMap<String, java.lang.Object>> subMap = new HashMap<>();
@@ -75,7 +75,7 @@ public class DCRS {
 
 	}
 
-	public synchronized static boolean removeCourse(String courseID, String semester) {
+	public synchronized boolean removeCourse(String courseID, String semester) {
 
 		// System.out.println("RD:"+recordDetails);
 		logManager.writeLog("REQUEST TYPE:removecourse" + "parameters:" + courseID + "," + semester);
@@ -115,7 +115,7 @@ public class DCRS {
 		return false;
 	}
 
-	public synchronized static SimpleEntry<Boolean, String> enrolCourse(String studentID, String courseID, String semester) {
+	public synchronized SimpleEntry<Boolean, String> enrolCourse(String studentID, String courseID, String semester) {
 
 		logManager.writeLog("REQUEST TYPE:enrolcourse" + "parameters:" + studentID + "," + courseID + "," + semester);
 		String status = "Failure";
@@ -141,7 +141,7 @@ public class DCRS {
 		return message;
 	}
 
-	public synchronized static boolean dropCourse(String studentID, String courseID) {
+	public synchronized boolean dropCourse(String studentID, String courseID) {
 
 		logManager.writeLog("REQUEST TYPE:dropcourse" + "parameters:" + studentID + "," + courseID);
 		boolean status = false;
@@ -251,7 +251,7 @@ public class DCRS {
 		return status;
 	}
 
-	public synchronized static HashMap<String, ArrayList<String>> getClassSchedule(String studentId) {
+	public synchronized HashMap<String, ArrayList<String>> getClassSchedule(String studentId) {
 
 		System.out.println("before class schedule:" + recordDetails);
 		// TODO Auto-generated method stub
@@ -261,7 +261,7 @@ public class DCRS {
 		return returnSchedule;
 	}
 
-	public synchronized static HashMap<String, Integer> listCourseAvailability(String semester) {
+	public synchronized HashMap<String, Integer> listCourseAvailability(String semester) {
 		logManager.writeLog("REQUEST TYPE: listCourseAvailability" + "parameters:" + semester);
 
 		HashMap<String, Integer> availableCourseList = new HashMap<>();
@@ -280,7 +280,7 @@ public class DCRS {
 
 	}
 
-	public synchronized static SimpleEntry<Boolean, String> swapCourse(String studentID, String newCourseID, String oldCourseID) {
+	public synchronized SimpleEntry<Boolean, String> swapCourse(String studentID, String newCourseID, String oldCourseID) {
 		// TODO Auto-generated method stub
 		logManager.writeLog("REQUEST TYPE:swapCourse,Parameters:" + studentID + "," + newCourseID + "," + oldCourseID);
 		SimpleEntry<Boolean, String> message = new SimpleEntry<Boolean, String>(true, "course swapped successfully");
@@ -326,7 +326,7 @@ public class DCRS {
 
 	
 	
-	public static String commonEnrolmentFunctionality(String studentID, String courseID, String semester, String d1, String d2,
+	public String commonEnrolmentFunctionality(String studentID, String courseID, String semester, String d1, String d2,
 			String d3) {
 		String dummy = "enrolcourse" + ":" + semester + ":" + studentID + ":" + courseID;
 		String dummy2 = "getOtherCourseCount" + ":" + studentID;
@@ -415,7 +415,7 @@ public class DCRS {
 
 	}
 
-	public static int returnSemesterCountForStudent(String studentID, String sem) {
+	public int returnSemesterCountForStudent(String studentID, String sem) {
 		int count = 0;
 		if (studentID.contains("COMP")) {
 			String dummy = "semcount" + ":" + sem + ":" + studentID;
@@ -442,7 +442,7 @@ public class DCRS {
 		return count;
 	}
 
-	public static int returnDeptSemesterCountForStudent(String studentID, String sem) {
+	public int returnDeptSemesterCountForStudent(String studentID, String sem) {
 		int count = 0;
 
 		if (recordDetails == null) {
@@ -471,7 +471,7 @@ public class DCRS {
 		return count;
 	}
 
-	public static String enrolCourseinowndept(String studentID, String courseID, String semester) {
+	public String enrolCourseinowndept(String studentID, String courseID, String semester) {
 
 		if (recordDetails == null || recordDetails.keySet().size() == 0) {
 
@@ -548,7 +548,7 @@ public class DCRS {
 
 	}
 
-	public static int returnOtherdepartmentCount(String studentID, String department2) {
+	public int returnOtherdepartmentCount(String studentID, String department2) {
 		int count = 0;
 		System.out.println("check the hashmap:" + recordDetails);
 		for (Map.Entry<String, HashMap<String, HashMap<String, java.lang.Object>>> sMap : recordDetails.entrySet()) {
@@ -571,7 +571,7 @@ public class DCRS {
 		return count;
 	}
 
-	public static String getOwnClassSchedule(String studentId) {
+	public String getOwnClassSchedule(String studentId) {
 		// TODO Auto-generated method stub
 		// CompServer ser=new CompServer();
 		String overallSchedule = new String();
@@ -614,7 +614,7 @@ public class DCRS {
 		return overallSchedule;
 	}
 
-	public static boolean semQuotaExceedCheck(String studentID, String sem) {
+	public boolean semQuotaExceedCheck(String studentID, String sem) {
 		boolean status = false;
 
 		if (recordDetails == null) {
@@ -650,7 +650,7 @@ public class DCRS {
 		return status;
 	}
 
-	private static boolean checkInOtherSems(String studentID, String courseID, String semester) {
+	private boolean checkInOtherSems(String studentID, String courseID, String semester) {
 		// TODO Auto-generated method stub
 
 		if (recordDetails != null) {
@@ -675,7 +675,7 @@ public class DCRS {
 		return true;
 	}
 
-	public static String dropcourseinowndept(String studentID, String courseID) {
+	public String dropcourseinowndept(String studentID, String courseID) {
 
 		String status = "Failure";
 		// System.out.println("BEFORE DROPPING:"+recordDetails);
@@ -722,7 +722,7 @@ public class DCRS {
 		return status;
 	}
 
-	public static HashMap<String, Integer> commonListCourseFunctionality(String semester, String d1, String d2) {
+	public HashMap<String, Integer> commonListCourseFunctionality(String semester, String d1, String d2) {
 
 		HashMap<String, Integer> availableCourseList = new HashMap<>();
 		String dummy = "listcourse" + ":" + semester;
@@ -784,7 +784,7 @@ public class DCRS {
 
 	}
 
-	private static HashMap<String, ArrayList<String>> commonGetClassSchedule(
+	private HashMap<String, ArrayList<String>> commonGetClassSchedule(
 			HashMap<String, ArrayList<String>> overallSchedule, String studentId, String d1, String d2) {
 
 		overallSchedule = new HashMap<>();
@@ -819,7 +819,7 @@ public class DCRS {
 		return overallSchedule;
 	}
 
-	public static HashMap<String, ArrayList<String>> getClassSchedule1(String studentId) {
+	public HashMap<String, ArrayList<String>> getClassSchedule1(String studentId) {
 		// TODO Auto-generated method stub
 		logManager.writeLog("REQUEST TYPE:getClassSchedule,Parameters:" + studentId);
 		// System.out.println("Record details for the class:"+recordDetails);
@@ -837,7 +837,7 @@ public class DCRS {
 		return overallSchedule;
 	}
 
-	public static HashMap<String, ArrayList<String>> scheduleUtility(String response1,
+	public HashMap<String, ArrayList<String>> scheduleUtility(String response1,
 			HashMap<String, ArrayList<String>> fullmap, ArrayList<String> fallList, ArrayList<String> winterList,
 			ArrayList<String> summerList) {
 
@@ -867,7 +867,7 @@ public class DCRS {
 		return fullmap;
 	}
 
-	private static boolean placeAvailableinNewCourse(String studentID, String newCourseID, String department2) {
+	private boolean placeAvailableinNewCourse(String studentID, String newCourseID, String department2) {
 		String dummy = "availablespace" + ":" + studentID + ":" + newCourseID;
 		UDPClient udpClient = new UDPClient();
 		String studDept = studentID.substring(0, 4);
@@ -886,7 +886,7 @@ public class DCRS {
 
 	}
 
-	public static String checkSpaceAvailability(String newCourseID) {
+	public String checkSpaceAvailability(String newCourseID) {
 		System.out.println("at availability check:" + recordDetails);
 		if (recordDetails == null || recordDetails.keySet().size() == 0) {
 			return "Failure";
@@ -921,7 +921,7 @@ public class DCRS {
 		return "Failure";
 	}
 
-	private static Map.Entry<Boolean, String> doesOldcourseexist(String studentID, String oldCourseID, String dept) {
+	private Map.Entry<Boolean, String> doesOldcourseexist(String studentID, String oldCourseID, String dept) {
 
 		Map.Entry<Boolean, String> entry = new SimpleEntry(false, null);
 
@@ -957,7 +957,7 @@ public class DCRS {
 
 	}
 
-	public static String checkifoldcourseforowndept(String studentID, String oldCourseID, String dept) {
+	public String checkifoldcourseforowndept(String studentID, String oldCourseID, String dept) {
 
 		if (recordDetails == null || recordDetails.keySet().size() == 0) {
 			return "Failure";

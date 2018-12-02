@@ -62,6 +62,7 @@ public class FrontEndUtitlies {
 			for (DatagramPacket datagramPacket : responses) {
 				
 				T currentPacketObject = (T) UDPUtilities.byteArrayToObject(datagramPacket.getData());
+				System.out.println(currentPacketObject.toString());
 				
 				if(majorityReplyCounter == 0) {					
 					majorityReply = currentPacketObject;

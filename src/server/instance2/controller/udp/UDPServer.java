@@ -18,9 +18,9 @@ public class UDPServer extends Thread {
 	private Integer INSEPort = Config.getConfig("INSTANCE2_INSE_PORT");
 	private Integer COMPPort = Config.getConfig("INSTANCE2_COMP_PORT");
 
-	private static HashMap<String, HashMap<String, HashMap<String, Object>>> recordDetails;
-	private static HashMap<String, Integer> serverRepo;
-	private DCRS compServer, inseServer, soenServer;
+	private HashMap<String, HashMap<String, HashMap<String, Object>>> recordDetails;
+	private HashMap<String, Integer> serverRepo;
+	private DCRS dcrs;
 	private String dept;
 	private DatagramSocket socket = null;
 	
@@ -43,17 +43,16 @@ public class UDPServer extends Thread {
 		try {
 			if (dept.contains("COMP")) {
 				socket = new DatagramSocket(COMPPort);
-				compServer = new DCRS(dept);
-				recordDetails = compServer.getCourseRecords();
+				dcrs = new DCRS(dept);
+				recordDetails = dcrs.getCourseRecords();
 			} else if (dept.contains("INSE")) {
 				socket = new DatagramSocket(INSEPort);
-				inseServer = new DCRS(dept);
-
-				recordDetails = inseServer.getCourseRecords();
+				dcrs = new DCRS(dept);
+				recordDetails = dcrs.getCourseRecords();
 			} else if (dept.contains("SOEN")) {
 				socket = new DatagramSocket(SOENPort);
-				soenServer = new DCRS(dept);
-				recordDetails = soenServer.getCourseRecords();
+				dcrs = new DCRS(dept);
+				recordDetails = dcrs.getCourseRecords();
 			}
 			while (true) {
 
@@ -131,13 +130,13 @@ public class UDPServer extends Thread {
 
 				// write a method to check conditions for enrolment with other
 				// depts
-				bloop = DCRS.getOwnClassSchedule(studentId);
+				bloop = dcrs.getOwnClassSchedule(studentId);
 
 			} else if (data(buffer).toString().split(":")[0].equalsIgnoreCase("getOtherCourseCount")) {
 
 				String studentId = (data(buffer).toString().split(":")[1]);
 
-				bloop = String.valueOf(DCRS.returnOtherdepartmentCount(studentId, dep));
+				bloop = String.valueOf(dcrs.returnOtherdepartmentCount(studentId, dep));
 
 			} else if (data(buffer).toString().split(":")[0].equalsIgnoreCase("dropcourse")) {
 
@@ -153,13 +152,13 @@ public class UDPServer extends Thread {
 
 				String studentId = (data(buffer).toString().split(":")[1]);
 				String courseId = (data(buffer).toString().split(":")[2]);
-				bloop = (DCRS.checkifoldcourseforowndept(studentId, courseId, dep.toUpperCase()));
+				bloop = (dcrs.checkifoldcourseforowndept(studentId, courseId, dep.toUpperCase()));
 
 			} else if (data(buffer).toString().split(":")[0].equalsIgnoreCase("availablespace")) {
 
 				String studentId = (data(buffer).toString().split(":")[1]);
 				String courseId = (data(buffer).toString().split(":")[2]);
-				bloop = DCRS.checkSpaceAvailability(courseId);
+				bloop = dcrs.checkSpaceAvailability(courseId);
 
 			}
 
@@ -177,31 +176,31 @@ public class UDPServer extends Thread {
 		switch(request[0]){
 		
 			case "addCourse":
-				response = UDPUtilities.objectToByteArray(DCRS.addCourse(request[1], request[2], request[3]));
+				response = UDPUtilities.objectToByteArray(dcrs.addCourse(request[1], request[2], request[3]));
 				break;
 				
 			case "removeCourse":
-				response = UDPUtilities.objectToByteArray(DCRS.removeCourse(request[1], request[2]));
+				response = UDPUtilities.objectToByteArray(dcrs.removeCourse(request[1], request[2]));
 				break;
 				
 			case "listCourseAvailability":
-				response = UDPUtilities.objectToByteArray(DCRS.listCourseAvailability(request[1]));
+				response = UDPUtilities.objectToByteArray(dcrs.listCourseAvailability(request[1]));
 				break;
 				
 			case "enrolCourse":
-				response = UDPUtilities.objectToByteArray(DCRS.enrolCourse(request[1], request[2], request[3]));
+				response = UDPUtilities.objectToByteArray(dcrs.enrolCourse(request[1], request[2], request[3]));
 				break;
 				
 			case "getClassSchedule":
-				response = UDPUtilities.objectToByteArray(DCRS.getClassSchedule(request[1]));
+				response = UDPUtilities.objectToByteArray(dcrs.getClassSchedule(request[1]));
 				break;
 				
 			case "dropCourse":
-				response = UDPUtilities.objectToByteArray(DCRS.dropCourse(request[1], request[2]));
+				response = UDPUtilities.objectToByteArray(dcrs.dropCourse(request[1], request[2]));
 				break;
 				
 			case "swapCourse":
-				response = UDPUtilities.objectToByteArray(DCRS.swapCourse(request[1], request[2], request[3]));
+				response = UDPUtilities.objectToByteArray(dcrs.swapCourse(request[1], request[2], request[3]));
 				break;
 		
 		}

@@ -308,3 +308,20 @@ WINTER: None
 FALL: None
 SUMMER: None
 
+[04:30:31 02/12/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[04:30:37 02/12/2018] [Remove Course] [Successfull] COMP6161 successfully removed from FALL semester, by COMPA1931
+[04:30:42 02/12/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[04:30:50 02/12/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[04:31:06 02/12/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+
+[04:31:20 02/12/2018] [Class Schedule] [Successfull] COMPS1931 has requested class schedule 
+WINTER: None
+FALL: COMP6161, 
+SUMMER: None
+
+[04:32:51 02/12/2018] [Add Course] [Successfull] COMP6161 successfully added to FALL semester, by COMPA1931
+[04:33:05 02/12/2018] [List Available Courses] [Successfull] COMPA1931 has requested course availability for FALL semester 
+COMP6161 => 1, 
+[04:33:31 02/12/2018] [Enrol Course] [Successfull] COMPS1931 has enrolled into course COMP6161 for FALL semester 
+

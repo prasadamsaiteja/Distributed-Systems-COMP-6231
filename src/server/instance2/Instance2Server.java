@@ -12,7 +12,7 @@ public class Instance2Server {
 		
 		compServer.start();
 		soenServer.start();
-		inseServer.start();		
+		inseServer.start();
 
 		System.out.println("Insance 2 Server initated");
 		
