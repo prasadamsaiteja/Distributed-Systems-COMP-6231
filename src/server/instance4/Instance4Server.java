@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import server.instance4.logging.CustomLogger;
-import server.instance4.pojo.Constants;
+import utils.Constants;
 import server.instance4.service.DCRS;
 
 public class Instance4Server {
@@ -31,11 +31,11 @@ public class Instance4Server {
 
 	private static void setupLogging(String serverName) throws IOException {
 
-		File files = new File(Constants.SERVER_LOGS_DIRECTORY);
+		File files = new File(Constants.SERVER_LOG_DIRECTORY+"instance4/");
 		if (!files.exists())
 			files.mkdirs();
 
-		files = new File(Constants.SERVER_LOGS_DIRECTORY + serverName + ".log");
+		files = new File(Constants.SERVER_LOG_DIRECTORY +"instance4/"+ serverName + ".log");
 		if (!files.exists())
 			files.createNewFile();
 

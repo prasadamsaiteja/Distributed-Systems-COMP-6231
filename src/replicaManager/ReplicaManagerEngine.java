@@ -114,7 +114,9 @@ public class ReplicaManagerEngine implements Runnable {
 					response = new String("true").getBytes();
 				else
 					response = null;
-				
+				break;
+			case Constants.OP_SOFTWARE_CRASH:
+				response = Integer.valueOf(performSoftwareCrashRecovery()).toString().getBytes();
 				break;
 			default:
 				LOGGER.info("NO HANDLER FOR UDP Socket call for method[" + key + "] with parameters[" + request.get(key) + "]");
@@ -127,21 +129,33 @@ public class ReplicaManagerEngine implements Runnable {
 	/**
 	 * @return
 	 */
+	private int performSoftwareCrashRecovery() {
+		
+		this.isAlive = false;
+		
+		instantiateNewServer();
+		byte[] reply = getDataFromWorkingReplicaManager();
+		boolean copy = copyState(reply);
+		if(copy==true)
+			return instanceNo;
+		else
+			return -1;
+		
+	}
+
+	/**
+	 * @return
+	 */
 	private byte[] getCurrentState(int instance) {
 		//TODO change timeout in udp call
 		List<byte[]> state = new ArrayList<>();
-		state.add(Utility.deepCopyQueue(requestQueue)); //TODO check reply from rm
-		
+		state.add(Utility.deepCopyQueue(requestQueue));
 		state.add(UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
-				Config.getConfig("INSTANCE" + instance + "_COMP_PORT"), null, Constants.OP_GETSTATE,0));		//TODO change timeout
-		
+				Config.getConfig("INSTANCE" + instance + "_COMP_PORT"), null, Constants.OP_GETSTATE,0));
 		state.add(UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
-				Config.getConfig("INSTANCE" + instance + "_SOEN_PORT"), null, Constants.OP_GETSTATE,0));		//TODO change timeout
-		
+				Config.getConfig("INSTANCE" + instance + "_SOEN_PORT"), null, Constants.OP_GETSTATE,0));
 		state.add(UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
-				Config.getConfig("INSTANCE" + instance + "_INSE_PORT"), null, Constants.OP_GETSTATE,0));		//TODO change timeout
-		
-		System.out.println("Fetched database from instance " + instance);
+				Config.getConfig("INSTANCE" + instance + "_INSE_PORT"), null, Constants.OP_GETSTATE,0));
 		return UDPUtilities.objectToByteArray(state);
 	}
 
@@ -151,7 +165,6 @@ public class ReplicaManagerEngine implements Runnable {
 	private int performHeartBeatProtocol() {
 		if (!isAlive()) {
 			this.isAlive = false;
-			System.out.println("Instance " + instanceNo + " Hardware Failure Detected");
 			instantiateNewServer();
 			byte[] reply = getDataFromWorkingReplicaManager();
 			boolean copy = copyState(reply);
@@ -159,10 +172,9 @@ public class ReplicaManagerEngine implements Runnable {
 				return instanceNo;
 			else
 				return -1;
-		}else {
-			return instanceNo;
+		} else {
+			return instanceNo;			
 		}
-		
 	}
 
 	/**

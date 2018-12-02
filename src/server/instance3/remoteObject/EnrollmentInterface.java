@@ -39,11 +39,7 @@ public interface EnrollmentInterface extends Remote {
 	
 	SimpleEntry<Boolean, String> swapCourse(String studentId,String newCourseId,String oldCourseId) throws RemoteException;
 	
-	default boolean isAlive() {
-		return true;
-	}
-	
-	byte[] getState();
+	byte[] getInternalState();
 
 	void setState(HashMap<String, HashMap<String, HashMap<String, Object>>> data);
 

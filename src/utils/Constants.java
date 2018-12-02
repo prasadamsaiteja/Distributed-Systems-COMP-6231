@@ -13,15 +13,15 @@ package utils;
 public class Constants {
 	
 	public static final String OP_HARDWARE_CRASH = "hardwareCrash";
+	public static final String OP_SOFTWARE_CRASH = "softwareCrash";
 	public static final String OP_ISALIVE = "isAlive";
 	public static final String OP_GETSTATE = "getState";
 	public static final String OP_SETSTATE = "setState";
 	
 	
-	public static final String ADVISOR_LOG_DIRECTORY = "./Logs/ClientLogs/instance3/advisor/";
-	public static final String STUDENT_LOG_DIRECTORY = "./Logs/ClientLogs/instance3/student/";
-	public static final String SERVER_LOG_DIRECTORY = "./Logs/ServerLogs/instance3/";
-	public static final String UDP_LOG_DIRECTORY = "./Logs/UDP/";
+	public static final String ADVISOR_LOG_DIRECTORY = "./Logs/ClientLogs/";
+	public static final String STUDENT_LOG_DIRECTORY = "./Logs/ClientLogs/";
+	public static final String SERVER_LOG_DIRECTORY = "./Logs/ServerLogs/";
 	public static final String RM_LOG_DIRECTORY = "./Logs/RM/";
 	public static final String UNDERSCORE = "_";
 	public static final String EMPTYSTRING = "";
@@ -44,5 +44,9 @@ public class Constants {
 	public static final String OP_SWAP_COURSE = "swapCourse";
 	public static final int MAX_COURSE_TAKEN_BY_STUDENT = 3;
 	public static final int MAX_ELECTIVE_COURSES = 2;
+	public static final String COMP = "COMP";
+	public static final String INSE = "INSE";
+	public static final String SOEN = "SOEN";
+	public static final String EMPTY_STRING="";
 
 }

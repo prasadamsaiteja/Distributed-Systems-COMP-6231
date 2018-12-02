@@ -41,8 +41,7 @@ public class Instance3Server {
 		if (serverName.equalsIgnoreCase("COMP")) {
 
 			if (compServer == null) {
-				setupLogging("COMP_Server.log");
-				compServer = new EnrollmentImpl(Department.COMP.toString());
+				compServer = new EnrollmentImpl(Department.COMP.toString(),"COMP_Server.log");
 				startUDPServer(compServer, Config.getConfig("INSTANCE3_COMP_PORT"));
 			}
 			return compServer;
@@ -50,8 +49,7 @@ public class Instance3Server {
 		} else if (serverName.equalsIgnoreCase("SOEN")) {
 
 			if (soenServer == null) {
-				setupLogging("SOEN_Server.log");
-				soenServer = new EnrollmentImpl(Department.SOEN.toString());
+				soenServer = new EnrollmentImpl(Department.SOEN.toString(),"SOEN_Server.log");
 				startUDPServer(soenServer,Config.getConfig("INSTANCE3_SOEN_PORT"));
 			}
 
@@ -60,8 +58,7 @@ public class Instance3Server {
 		} else if (serverName.equalsIgnoreCase("INSE")) {
 
 			if (inseServer == null) {
-				setupLogging("INSE_Server.log");
-				inseServer = new EnrollmentImpl(Department.INSE.toString());
+				inseServer = new EnrollmentImpl(Department.INSE.toString(),"INSE_Server.log");
 				startUDPServer(inseServer,Config.getConfig("INSTANCE3_INSE_PORT"));
 			}
 
@@ -77,21 +74,6 @@ public class Instance3Server {
 		new Thread(() -> {
 			((EnrollmentImpl) instance).UDPServer(portNo);
 		}).start();
-	}
-
-	/**
-	 * Logging setup for COMP server
-	 * 
-	 * @throws IOException
-	 */
-	private static void setupLogging(String fileName) throws IOException {
-		File files = new File(Constants.SERVER_LOG_DIRECTORY);
-		if (!files.exists())
-			files.mkdirs();
-		files = new File(Constants.SERVER_LOG_DIRECTORY + fileName);
-		if (!files.exists())
-			files.createNewFile();
-		MyLogger.setup(files.getAbsolutePath());
 	}
 
 }

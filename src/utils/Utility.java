@@ -59,4 +59,19 @@ public class Utility {
 		
 		return UDPUtilities.objectToByteArray(copy);
 	}
+	
+	
+
+	/**
+	 * @param deptDatabase
+	 * @return
+	 */
+	public static byte[] deepCopyInstance4State(HashMap<String, HashMap<String, HashMap<String, Object>>> deptDatabase) {
+		return deepCopyInstance3State(deptDatabase);
+	}
+	
+	
+	public static int getInstanceNumber(String name) {
+		return Integer.parseInt(name.substring(8, 9));
+	}
 }
