@@ -251,13 +251,13 @@ public class ReplicaManagerEngine implements Runnable {
 			this.requestQueue = (Queue<Integer>) UDPUtilities.byteArrayToObject(state.get(0));
 
 			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT"), UDPUtilities.objectToByteArray(UDPUtilities.byteArrayToObject(state.get(1))), Constants.OP_SETSTATE,
+					Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT"), UDPUtilities.byteArrayToObject(state.get(1)), Constants.OP_SETSTATE,
 					1000);
 			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_SOEN_PORT"), UDPUtilities.objectToByteArray(UDPUtilities.byteArrayToObject(state.get(2))), Constants.OP_SETSTATE,
+					Config.getConfig("INSTANCE" + instanceNo + "_SOEN_PORT"), UDPUtilities.byteArrayToObject(state.get(2)), Constants.OP_SETSTATE,
 					1000);
 			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_INSE_PORT"), UDPUtilities.objectToByteArray(UDPUtilities.byteArrayToObject(state.get(3))), Constants.OP_SETSTATE,
+					Config.getConfig("INSTANCE" + instanceNo + "_INSE_PORT"), UDPUtilities.byteArrayToObject(state.get(3)), Constants.OP_SETSTATE,
 					1000);
 		}
 		
