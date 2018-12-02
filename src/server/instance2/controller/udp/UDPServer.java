@@ -176,15 +176,15 @@ public class UDPServer extends Thread {
 		switch(request[0]){
 		
 			case "addCourse":
-				response = UDPUtilities.objectToByteArray(dcrs.addCourse(request[1], request[2], request[3]));
+				response = UDPUtilities.objectToByteArray(dcrs.addCourse(request[2], request[3], request[4]));
 				break;
 				
 			case "removeCourse":
-				response = UDPUtilities.objectToByteArray(dcrs.removeCourse(request[1], request[2]));
+				response = UDPUtilities.objectToByteArray(dcrs.removeCourse(request[2], request[3]));
 				break;
 				
 			case "listCourseAvailability":
-				response = UDPUtilities.objectToByteArray(dcrs.listCourseAvailability(request[1]));
+				response = UDPUtilities.objectToByteArray(dcrs.listCourseAvailability(request[2]));
 				break;
 				
 			case "enrolCourse":
@@ -202,7 +202,7 @@ public class UDPServer extends Thread {
 			case "swapCourse":
 				response = UDPUtilities.objectToByteArray(dcrs.swapCourse(request[1], request[2], request[3]));
 				break;
-		
+
 		}
 		
 		try {

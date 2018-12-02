@@ -768,13 +768,13 @@ public class DCRS extends UDPServer {
 
 		if (recordDetails != null) {
 			HashMap<String, HashMap<String, java.lang.Object>> semCourseList = recordDetails.get(semester);
-			// System.out.println(recordDetails);
+			System.out.println(recordDetails);
 			if (semCourseList != null) {
 				for (Map.Entry<String, HashMap<String, java.lang.Object>> map : semCourseList.entrySet()) {
 
 					HashMap<String, java.lang.Object> detailsMap = map.getValue();
 					String capacity = detailsMap.get("capacity").toString();
-					// System.out.println("sub:"+map.getKey());
+					System.out.println("sub:"+map.getKey());
 					availableCourseList.put(map.getKey(), Integer.parseInt(capacity));
 
 				}
@@ -816,6 +816,15 @@ public class DCRS extends UDPServer {
 
 		System.out.println("what happens now?" + overallSchedule);
 
+		if(!overallSchedule.containsKey("WINTER"))
+			overallSchedule.put("WINTER", new ArrayList<>());
+		
+		if(!overallSchedule.containsKey("SUMMER"))
+			overallSchedule.put("SUMMER", new ArrayList<>());
+		
+		if(!overallSchedule.containsKey("FALL"))
+			overallSchedule.put("FALL", new ArrayList<>());
+		
 		return overallSchedule;
 	}
 
@@ -823,7 +832,7 @@ public class DCRS extends UDPServer {
 		// TODO Auto-generated method stub
 		logManager.writeLog("REQUEST TYPE:getClassSchedule,Parameters:" + studentId);
 		// System.out.println("Record details for the class:"+recordDetails);
-		HashMap<String, ArrayList<String>> overallSchedule = null;
+		HashMap<String, ArrayList<String>> overallSchedule = new HashMap<>();
 		if (department.equalsIgnoreCase("comp")) {
 
 			return commonGetClassSchedule(overallSchedule, studentId, "SOEN", "INSE");
@@ -833,7 +842,7 @@ public class DCRS extends UDPServer {
 		} else if (department.equalsIgnoreCase("soen")) {
 			return commonGetClassSchedule(overallSchedule, studentId, "INSE", "COMP");
 		}
-
+		
 		return overallSchedule;
 	}
 
