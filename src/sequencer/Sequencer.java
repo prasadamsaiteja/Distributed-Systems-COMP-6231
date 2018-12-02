@@ -3,7 +3,7 @@ package sequencer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-import generic.Config;
+import utils.Config;
 
 public class Sequencer extends Thread {
 	

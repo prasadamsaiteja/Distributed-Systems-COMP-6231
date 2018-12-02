@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import generic.UDPUtilities;
 import server.instance1.controller.Helper;
 import server.instance1.data.Database;
+import utils.UDPUtilities;
 
 public class UDPClient {
 

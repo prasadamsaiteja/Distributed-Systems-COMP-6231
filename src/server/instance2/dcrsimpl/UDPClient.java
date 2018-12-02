@@ -10,7 +10,7 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
-import generic.Config;
+import utils.Config;
 
 
 public class UDPClient {

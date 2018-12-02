@@ -8,7 +8,7 @@ import java.util.Scanner;
 import org.omg.CORBA.Any;
 
 import client.controller.data.Cache;
-import generic.Logger;
+import utils.Logger;
 
 public class Controller {
 	

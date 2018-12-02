@@ -11,8 +11,8 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import generic.Config;
-import generic.UDPUtilities;
+import utils.Config;
+import utils.UDPUtilities;
 
 
 

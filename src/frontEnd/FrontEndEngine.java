@@ -9,7 +9,7 @@ import java.util.AbstractMap.SimpleEntry;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.ORB;
 
-import generic.corbaInterface.IDCRSPOA;
+import utils.corbaInterface.IDCRSPOA;
 
 public class FrontEndEngine extends IDCRSPOA {
 	

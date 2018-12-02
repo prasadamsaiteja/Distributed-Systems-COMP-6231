@@ -6,7 +6,7 @@
 */
 package server.instance3.util;
 
-import generic.Config;
+import utils.Config;
 
 /**
  * Department Enumeration

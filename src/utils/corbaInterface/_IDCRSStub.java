@@ -1,4 +1,4 @@
-package generic.corbaInterface;
+package utils.corbaInterface;
 
 
 /**
@@ -8,7 +8,7 @@ package generic.corbaInterface;
 * Wednesday, October 24, 2018 11:11:41 PM EDT
 */
 
-public class _IDCRSStub extends org.omg.CORBA.portable.ObjectImpl implements generic.corbaInterface.IDCRS
+public class _IDCRSStub extends org.omg.CORBA.portable.ObjectImpl implements utils.corbaInterface.IDCRS
 {
 
 

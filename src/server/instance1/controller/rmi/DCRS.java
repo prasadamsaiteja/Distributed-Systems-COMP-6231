@@ -4,10 +4,10 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import generic.Logger;
 import server.instance1.controller.Helper;
 import server.instance1.controller.socket.UDPClient;
 import server.instance1.data.Database;
+import utils.Logger;
 
 public class DCRS {
 		

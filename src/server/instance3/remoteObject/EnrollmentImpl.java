@@ -22,12 +22,13 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-import generic.Config;
-import generic.UDPUtilities;
-import server.instance3.util.Constants;
 import server.instance3.util.Department;
 import server.instance3.util.Semester;
 import server.instance3.util.Utils;
+import utils.Config;
+import utils.Constants;
+import utils.UDPUtilities;
+import utils.Utility;
 
 /**
  * @author Amandeep Singh
@@ -713,6 +714,21 @@ public class EnrollmentImpl implements EnrollmentInterface {
 						info.get(Constants.NEW_COURSE_ID), info.get(Constants.OLD_COURSE_ID),
 						info.get(Constants.OLD_COURSE_DEPT), info.get(Constants.SEMESTER)));
 				break;
+			case Constants.OP_GETSTATE:
+				response = getState();
+				break;
+			case Constants.OP_SETSTATE:
+				setState(data);
+				response = null;
+				break;
+			case Constants.OP_ISALIVE:
+				LOGGER.info("\n\n\n\n GOT IT ALIVE REQUEST\n\n\n\n");
+				response = String.valueOf(true).getBytes();
+				break;
+			default:
+				LOGGER.info("UDP Requeset not understood");
+					break;
+
 			}
 		}
 
@@ -839,6 +855,22 @@ public class EnrollmentImpl implements EnrollmentInterface {
 		}
 
 		return response;
+	}
+
+	/* (non-Javadoc)
+	 * @see server.instance3.remoteObject.EnrollmentInterface#getState()
+	 */
+	@Override
+	public byte[] getState() {
+		return Utility.deepCopyInstance3State(deptDatabase);
+	}
+
+	/* (non-Javadoc)
+	 * @see server.instance3.remoteObject.EnrollmentInterface#setState(byte[])
+	 */
+	@Override
+	public void setState(byte[] data) {
+		this.deptDatabase = (HashMap<String, HashMap<String, HashMap<String, Object>>>)UDPUtilities.byteArrayToObject(data);
 	}
 
 }

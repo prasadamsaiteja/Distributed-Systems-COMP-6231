@@ -7,7 +7,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import generic.Config;
+import utils.Config;
 
 public class SequencerUDPHandler {
 	

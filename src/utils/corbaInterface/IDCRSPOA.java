@@ -1,4 +1,4 @@
-package generic.corbaInterface;
+package utils.corbaInterface;
 
 
 /**
@@ -9,7 +9,7 @@ package generic.corbaInterface;
 */
 
 public abstract class IDCRSPOA extends org.omg.PortableServer.Servant
- implements generic.corbaInterface.IDCRSOperations, org.omg.CORBA.portable.InvokeHandler
+ implements utils.corbaInterface.IDCRSOperations, org.omg.CORBA.portable.InvokeHandler
 {
 
   // Constructors

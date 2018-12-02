@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 
-import generic.Config;
-import generic.UDPUtilities;
 import server.instance2.dcrsinterface.DCRSInterface;
 import server.instance2.logging.LogManager;
+import utils.Config;
+import utils.UDPUtilities;
 
 
 public class Impl implements DCRSInterface{
