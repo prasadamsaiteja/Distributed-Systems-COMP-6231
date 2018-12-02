@@ -69,9 +69,9 @@ public class FrontEndUtitlies {
 		for(DatagramPacket dp : responses) {
 			
 			instanceNo = Utility.getInstanceNumber(Config.getReverseMaping(dp.getPort()));
-			reply = UDPUtilities.byteArrayToObject(dp.getData());
-			
+			reply = UDPUtilities.byteArrayToObject(dp.getData());			
 			instanceResponse.put(instanceNo, reply);
+			
 		}
 		
 		return findMajority(instanceResponse);

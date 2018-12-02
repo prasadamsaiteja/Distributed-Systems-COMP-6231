@@ -297,11 +297,11 @@ public class Helper {
 			
 		}
 		
+		System.out.println(deepCopyDatabase);
 		return UDPUtilities.objectToByteArray(deepCopyDatabase);
 		
 	}
 
-	
 	public static void setState(Object object) {
 	
 		HashMap<String, HashMap<String, HashMap<String, Object>>> data = (HashMap<String, HashMap<String, HashMap<String, Object>>>) object;

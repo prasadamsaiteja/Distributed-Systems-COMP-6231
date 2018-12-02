@@ -58,7 +58,7 @@ public class UDPServer extends Thread {
 		
 		String receivedRequest = new String(requestPacket.getData(), 0, requestPacket.getLength());
 		
-		if(receivedRequest.startsWith("SEQUENCER&")) {
+		if(receivedRequest.startsWith("SEQUENCER&")) { 
 			processSequencerRequest(receivedRequest.replace("SEQUENCER&", ""));
 			return null;
 		}
