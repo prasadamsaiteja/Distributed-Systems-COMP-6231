@@ -27,16 +27,15 @@ import utils.Utility;
 
 public class FrontEndUtitlies {
 
-	static Map<Integer,Integer> softwareFailureCount;
-	
+	static Map<Integer, Integer> softwareFailureCount;
+
 	static {
 		softwareFailureCount = new HashMap<>();
-		IntStream.rangeClosed(1, 4).forEach(i->{
+		IntStream.rangeClosed(1, 4).forEach(i -> {
 			softwareFailureCount.put(i, 0);
 		});
 	}
-	
-	
+
 	public static Object sendUDPRequest(String message) {
 
 		try {
@@ -62,18 +61,18 @@ public class FrontEndUtitlies {
 	 * @return
 	 */
 	private static Object replyMajorityResponse(List<DatagramPacket> responses) {
-		
-		Map<Integer,Object> instanceResponse = new HashMap<>();
+
+		Map<Integer, Object> instanceResponse = new HashMap<>();
 		int instanceNo;
-		Object reply; 
-		for(DatagramPacket dp : responses) {
-			
+		Object reply;
+		for (DatagramPacket dp : responses) {
+
 			instanceNo = Utility.getInstanceNumber(Config.getReverseMaping(dp.getPort()));
-			reply = UDPUtilities.byteArrayToObject(dp.getData());			
+			reply = UDPUtilities.byteArrayToObject(dp.getData());
 			instanceResponse.put(instanceNo, reply);
-			
+
 		}
-		
+
 		return findMajority(instanceResponse);
 	}
 
@@ -83,29 +82,28 @@ public class FrontEndUtitlies {
 	 */
 	private static Object findMajority(Map<Integer, Object> instanceResponse) {
 		Object reply;
-		if(instanceResponse.get(1) instanceof Boolean) {
+		if (instanceResponse.get(1) instanceof Boolean) {
 			reply = getBooleanMajority(instanceResponse);
-		}else if(instanceResponse.get(1) instanceof SimpleEntry) {
+		} else if (instanceResponse.get(1) instanceof SimpleEntry) {
 			reply = getSimpleEntryMajority(instanceResponse);
-		}else if(instanceResponse.get(1) instanceof HashMap) {
+		} else if (instanceResponse.get(1) instanceof HashMap) {
 			reply = getHashMapMajority(instanceResponse);
-		}else {
+		} else {
 			System.out.println(" FRONTENDUTILITITES : RESPONSE NOT RECOGNIZED ");
 			reply = null;
 		}
-		
-		
-		//check for software failure
-		for(Integer i : softwareFailureCount.keySet()) {
-			if(softwareFailureCount.get(i)>=3) {
-				softwareFailureCount.put(i,0);
-				//inform RM for Software bug
+
+		// check for software failure
+		for (Integer i : softwareFailureCount.keySet()) {
+			if (softwareFailureCount.get(i) >= 3) {
+				softwareFailureCount.put(i, 0);
+				// inform RM for Software bug
 				UDPUtilities.udpCommunication(Config.getStringConfig("RM" + i + "_IP"),
 						Config.getConfig("RM" + i + "_PORT"), null, Constants.OP_SOFTWARE_CRASH, 5000);
 				break;
 			}
 		}
-		
+
 		return reply;
 	}
 
@@ -114,70 +112,67 @@ public class FrontEndUtitlies {
 	 * @return
 	 */
 	private static <T> Object getHashMapMajority(Map<Integer, Object> instanceResponse) {
-		
-		
-		Map<String,List<Integer>> majority = new HashMap<>();
-		Map<String,HashMap<String,T>> reply = new HashMap<>();
-		for(Integer i : instanceResponse.keySet()) {
-			
-			HashMap<String,T> s = (HashMap<String,T>)instanceResponse.get(i);
-			List<String> keys=new ArrayList<>();
-			for(String k : s.keySet()) {
+
+		Map<String, List<Integer>> majority = new HashMap<>();
+		Map<String, HashMap<String, T>> reply = new HashMap<>();
+		for (Integer i : instanceResponse.keySet()) {
+
+			HashMap<String, T> s = (HashMap<String, T>) instanceResponse.get(i);
+			List<String> keys = new ArrayList<>();
+			for (String k : s.keySet()) {
 				keys.add(k);
 			}
 			Collections.sort(keys);
-			StringBuilder concatString=new StringBuilder();;
+			StringBuilder concatString = new StringBuilder();
+			;
 			keys.stream().forEach(xs -> {
 				concatString.append(xs);
-			});;
-			
+			});
+			;
+
 			reply.put(concatString.toString(), s);
-			
-			
-			if(majority.containsKey(concatString)) {
+
+			if (majority.containsKey(concatString)) {
 				List<Integer> list = majority.get(i);
 				list.add(i);
 				majority.put(concatString.toString(), list);
-			}else {
+			} else {
 				List<Integer> instances = new ArrayList<>();
 				instances.add(i);
 				majority.put(concatString.toString(), instances);
 			}
-			
+
 		}
-		
-		int max=-1;
-		Map<String,T> maxReply = null;
-		String faultReply=null;
-		
-		
-		for(String key : majority.keySet()) {
-			
-			if(max<majority.get(key).size()) {
+
+		int max = -1;
+		Map<String, T> maxReply = null;
+		String faultReply = null;
+
+		for (String key : majority.keySet()) {
+
+			if (max < majority.get(key).size()) {
+				max = majority.get(key).size();
 				maxReply = reply.get(key);
-			}else {
+			} else {
 				faultReply = key;
 			}
 		}
-			
-		if(faultReply!=null) {
+
+		if (faultReply != null) {
 			int faultInstance = majority.get(faultReply).get(0);
-			
-			for(Integer i : softwareFailureCount.keySet()) {
-				if(i==faultInstance) {
-					softwareFailureCount.put(faultInstance, (softwareFailureCount.get(faultInstance)+1));
-				}else {
+
+			for (Integer i : softwareFailureCount.keySet()) {
+				if (i == faultInstance) {
+					softwareFailureCount.put(faultInstance, (softwareFailureCount.get(faultInstance) + 1));
+				} else {
 					softwareFailureCount.put(i, 0);
 				}
 			}
-			
+
 		}
-		
-		
-		
+
 		return maxReply;
-		
-		
+
 	}
 
 	/**
@@ -185,57 +180,61 @@ public class FrontEndUtitlies {
 	 * @return
 	 */
 	private static Object getSimpleEntryMajority(Map<Integer, Object> instanceResponse) {
-		
-		Map<SimpleEntry<Boolean,String>,List<Integer>> majority = new HashMap<>();
-		
-		for(Integer i : instanceResponse.keySet()) {
-			
-			SimpleEntry<Boolean,String> s = (SimpleEntry<Boolean,String>)instanceResponse.get(i);
+
+		Map<Boolean, List<Integer>> majority = new HashMap<>();
+		for (Integer i : instanceResponse.keySet()) {
+
+			SimpleEntry<Boolean, String> s = (SimpleEntry<Boolean, String>) instanceResponse.get(i);
 			Boolean b = s.getKey();
-			if(majority.containsKey(b)) {
-				List<Integer> list = majority.get(i);
+			if (majority.containsKey(b)) {
+				List<Integer> list = majority.get(b);
 				list.add(i);
-				majority.put(s, list);
-			}else {
+				majority.put(b, list);
+			} else {
 				List<Integer> instances = new ArrayList<>();
 				instances.add(i);
-				majority.put(s, instances);
+				majority.put(b, instances);
 			}
-			
+
 		}
-		
-		int max=-1;
-		SimpleEntry<Boolean,String> maxReply = null;
-		SimpleEntry<Boolean,String> faultReply=null;
-		
-		
-		
-		for(SimpleEntry key : majority.keySet()) {
-			
-			if(max<majority.get(key.getKey()).size()) {
+
+		int max = -1;
+		Boolean maxReply = null;
+		Boolean faultReply = null;
+
+		for (Boolean key : majority.keySet()) {
+
+			if (max < majority.get(key).size()) {
+				max = majority.get(key).size();
 				maxReply = key;
-			}else {
+			} else {
 				faultReply = key;
 			}
 		}
-			
+		SimpleEntry<Boolean, String> reply=null;
+		for (Integer i : instanceResponse.keySet()) {
+			SimpleEntry<Boolean, String> s = (SimpleEntry<Boolean, String>) instanceResponse.get(i);
+			if(s.getKey()==maxReply) {
+				reply = s;
+				break;
+			}
+		}
 		
-		if(faultReply!=null) {
+
+		if (faultReply != null) {
 			int faultInstance = majority.get(faultReply).get(0);
-			
-			for(Integer i : softwareFailureCount.keySet()) {
-				if(i==faultInstance) {
-					softwareFailureCount.put(faultInstance, (softwareFailureCount.get(faultInstance)+1));
-				}else {
+
+			for (Integer i : softwareFailureCount.keySet()) {
+				if (i == faultInstance) {
+					softwareFailureCount.put(faultInstance, (softwareFailureCount.get(faultInstance) + 1));
+				} else {
 					softwareFailureCount.put(i, 0);
 				}
 			}
-			
+
 		}
-		
-		
-		
-		return maxReply;
+
+		return reply;
 	}
 
 	/**
@@ -243,58 +242,52 @@ public class FrontEndUtitlies {
 	 * @return
 	 */
 	private static Object getBooleanMajority(Map<Integer, Object> instanceResponse) {
-		
-		
-		
-		Map<Boolean,List<Integer>> majority = new HashMap<>();
-		
-		for(Integer i : instanceResponse.keySet()) {
-			
-			Boolean b = (Boolean)instanceResponse.get(i);
-			if(majority.containsKey(b)) {
+
+		Map<Boolean, List<Integer>> majority = new HashMap<>();
+
+		for (Integer i : instanceResponse.keySet()) {
+
+			Boolean b = (Boolean) instanceResponse.get(i);
+			if (majority.containsKey(b)) {
 				List<Integer> list = majority.get(b);
 				list.add(i);
 				majority.put(b, list);
-			}else {
+			} else {
 				List<Integer> instances = new ArrayList<>();
 				instances.add(i);
 				majority.put(b, instances);
 			}
-			
+
 		}
-		
-		
-		int max=-1;
+
+		int max = -1;
 		Boolean maxReply = null;
-		Boolean faultReply=null;
-		
-		for(Boolean key : majority.keySet()) {
-			if(max<majority.get(key).size()) {
+		Boolean faultReply = null;
+
+		for (Boolean key : majority.keySet()) {
+			if (max < majority.get(key).size()) {
+				max = majority.get(key).size();
 				maxReply = key;
-			}else {
+			} else {
 				faultReply = key;
 			}
 		}
-			
-		
-		if(faultReply!=null) {
+
+		if (faultReply != null) {
 			int faultInstance = majority.get(faultReply).get(0);
-			
-			for(Integer i : softwareFailureCount.keySet()) {
-				if(i==faultInstance) {
-					softwareFailureCount.put(faultInstance, (softwareFailureCount.get(faultInstance)+1));
-				}else {
+
+			for (Integer i : softwareFailureCount.keySet()) {
+				if (i == faultInstance) {
+					softwareFailureCount.put(faultInstance, (softwareFailureCount.get(faultInstance) + 1));
+				} else {
 					softwareFailureCount.put(i, 0);
 				}
 			}
-			
+
 		}
-		
-		
-		
+
 		return maxReply;
 	}
-	
 
 	private static <T> Object getMajorityOfRepliesBoolean(List<DatagramPacket> responses, Class<T> type) {
 
@@ -308,7 +301,7 @@ public class FrontEndUtitlies {
 
 				T currentPacketObject = (T) UDPUtilities.byteArrayToObject(datagramPacket.getData());
 				System.out.println(currentPacketObject.toString());
-				
+
 				if (majorityReplyCounter == 0) {
 					majorityReply = currentPacketObject;
 					majorityReplyCounter++;
@@ -404,37 +397,37 @@ public class FrontEndUtitlies {
 
 				int replyReceived = 0;
 
-				while (replyReceived < 2) {
+				while (replyReceived < 3) {
 					DatagramPacket replyPacket = receiveReply();
 					replies.add(replyPacket);
 					replyReceived++;
 				}
-
 				return replies;
 			}
-
 		});
 
 		try {
 			// TODO change the time
-			// return handler.get(5, TimeUnit.Seconds);
-			return handler.get(2, TimeUnit.HOURS);
+			return handler.get(3, TimeUnit.SECONDS);
+			// return handler.get(2, TimeUnit.HOURS);
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			
+
 			handler.cancel(true);
 			System.out.println("Possible Hardware failure detected, notifying replica managers");
-			
-			IntStream.rangeClosed(1, 3).forEach(i -> {	
-				if(i==2) {
-					
-				}else {
-				new Thread(new Runnable() {
-					public void run() {
-						try {
-							UDPUtilities.udpCommunication(Config.getStringConfig("RM"+i+"_IP"), Config.getConfig("RM"+i+"_PORT"), null, Constants.OP_HARDWARE_CRASH, -1);
-						} catch(Exception ignored) {}
-					}
-				}).start();			
+
+			IntStream.rangeClosed(1, 3).forEach(i -> {
+				if (i == 2) {
+
+				} else {
+					new Thread(new Runnable() {
+						public void run() {
+							try {
+								UDPUtilities.udpCommunication(Config.getStringConfig("RM" + i + "_IP"),
+										Config.getConfig("RM" + i + "_PORT"), null, Constants.OP_HARDWARE_CRASH, -1);
+							} catch (Exception ignored) {
+							}
+						}
+					}).start();
 				}
 			});
 
