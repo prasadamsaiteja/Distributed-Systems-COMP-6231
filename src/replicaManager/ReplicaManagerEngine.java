@@ -146,7 +146,7 @@ public class ReplicaManagerEngine implements Runnable {
 			}
 		});
 		byte[] reply = getDataFromWorkingReplicaManager(serverInstances);
-		boolean copy = copyState(reply);
+		boolean copy = copyState(reply,4);
 		if (copy == true)
 			return instanceNo;
 		else
@@ -263,25 +263,37 @@ public class ReplicaManagerEngine implements Runnable {
 		}
 	}
 
+	private boolean copyState(byte[] reply){
+		return copyState(reply,instanceNo);
+	}
+	
 	/**
 	 * @param reply
 	 * @return
 	 */
-	private boolean copyState(byte[] reply) {
+	private boolean copyState(byte[] reply,int instance) {
 		if (reply == null) {
 			System.out.println("RECEIVED NULL COPY STATE");
 		} else {
 			List<byte[]> state = (List<byte[]>) UDPUtilities.byteArrayToObject(reply);
 			this.requestQueue = (Queue<Integer>) UDPUtilities.byteArrayToObject(state.get(0));
 
-			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT"),
+			
+			System.out.println("Setting state to instance : "+instance);
+			System.out.println("COMP : "+UDPUtilities.byteArrayToObject(state.get(1)));
+			System.out.println("SOEN : "+UDPUtilities.byteArrayToObject(state.get(2)));
+			System.out.println("INSE : "+UDPUtilities.byteArrayToObject(state.get(3)));
+			
+			
+			
+			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
+					Config.getConfig("INSTANCE" + instance + "_COMP_PORT"),
 					UDPUtilities.byteArrayToObject(state.get(1)), Constants.OP_SETSTATE, 1000);
-			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_SOEN_PORT"),
+			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
+					Config.getConfig("INSTANCE" + instance + "_SOEN_PORT"),
 					UDPUtilities.byteArrayToObject(state.get(2)), Constants.OP_SETSTATE, 1000);
-			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_INSE_PORT"),
+			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
+					Config.getConfig("INSTANCE" + instance + "_INSE_PORT"),
 					UDPUtilities.byteArrayToObject(state.get(3)), Constants.OP_SETSTATE, 1000);
 		}
 

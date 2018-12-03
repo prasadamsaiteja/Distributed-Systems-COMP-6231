@@ -297,6 +297,9 @@ public class Helper {
 			
 		}
 		
+		
+		System.out.println("Getting state from Instance 1 : "+deepCopyDatabase);
+		
 		return UDPUtilities.objectToByteArray(deepCopyDatabase);
 		
 	}
