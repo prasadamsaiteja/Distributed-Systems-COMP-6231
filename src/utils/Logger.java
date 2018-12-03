@@ -40,7 +40,7 @@ public class Logger {
 		
 		try{
 			if(isServer){
-				File logFile = new File("../Logs/Instance1/ServerLogs/" + Database.getInstance().department + ".txt");
+				File logFile = new File("./Logs/Instance1/ServerLogs/" + Database.getInstance().department + ".txt");
 				logFile.getParentFile().mkdirs();
 				logFile.createNewFile();
 				

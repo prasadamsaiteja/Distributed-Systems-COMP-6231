@@ -31,11 +31,11 @@ public class Instance4Server {
 
 	private static void setupLogging(String serverName) throws IOException {
 
-		File files = new File(String.format(Constants.SERVER_LOG_DIRECTORY,"Instance3"));
+		File files = new File(String.format(Constants.SERVER_LOG_DIRECTORY,"Instance4"));
 		if (!files.exists())
 			files.mkdirs();
 
-		files = new File(String.format(Constants.SERVER_LOG_DIRECTORY,"Instance3") + serverName+".log");
+		files = new File(String.format(Constants.SERVER_LOG_DIRECTORY,"Instance4") + serverName+".log");
 		if (!files.exists())
 			files.createNewFile();
 

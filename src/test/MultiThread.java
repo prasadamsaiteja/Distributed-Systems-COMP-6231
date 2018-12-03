@@ -32,27 +32,36 @@ public class MultiThread {
 	    NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
 	    cache.dcrs = (IDCRS) IDCRSHelper.narrow(ncRef.resolve_str(cache.getDepartment()));
 	    cache.dcrs.addCourse(cache.id, "COMP6164", "FALL", 2);
-	    Runnable task1 = () -> {
-	    	Any any = cache.dcrs.enrolCourse("COMPS1111", "COMP6164", "FALL");
+	    cache.dcrs.addCourse(cache.id, "COMP6163", "FALL", 2);
+	    cache.dcrs.addCourse(cache.id, "COMP6164", "WINTER", 2);
+	    cache.dcrs.addCourse(cache.id, "COMP6164", "SUMMER", 2);
+		Runnable task1 = () -> {
+			Any any = cache.dcrs.enrolCourse("COMPS1111", "COMP6164", "FALL");
 			SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) any.extract_Value();
 			System.out.println("Enrolment result: " + result);
 		};
-		 Runnable task2 = () -> {
-		    	Any any = cache.dcrs.enrolCourse("COMPS2222", "COMP6164", "FALL");
-				SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) any.extract_Value();
-				System.out.println("Enrolment result: " + result);
-			};
-			
-			 Runnable task3 = () -> {
-				 Any any = cache.dcrs.swapCourse("COMPS3333", "COMP6164", "COMP6163");
-				SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) any.extract_Value();
-					
-					System.out.println("Swapcourse result: " + result);
-				};
+		Runnable task2 = () -> {
+			Any any = cache.dcrs.enrolCourse("COMPS2222", "COMP6164", "FALL");
+			SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) any.extract_Value();
+			System.out.println("Enrolment result: " + result);
+		};
+
+		Runnable task3 = () -> {
+			Any any = cache.dcrs.enrolCourse("COMPS3333", "COMP6164", "FALL");
+			SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) any.extract_Value();
+			System.out.println("Enrolment result: " + result);
+		};
+
+		Runnable task4 = () -> {
+			Any any = cache.dcrs.swapCourse("COMPS3333", "COMP6164", "COMP6163");
+			SimpleEntry<Boolean, String> result = (SimpleEntry<Boolean, String>) any.extract_Value();
+			System.out.println("Swapcourse result: " + result);
+		};
 			
 		task1.run();
 		task2.run();
 		task3.run();
+		task4.run();
 			
 	  
 	    

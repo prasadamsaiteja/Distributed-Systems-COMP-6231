@@ -26,7 +26,7 @@ public class DCRS extends UDPServer {
 	public DCRS(String dept) throws IOException {
 		super(dept);
 		department = dept;
-		logManager = new LogManager("../Logs/Instance2/ServerLogs/" + dept.toUpperCase() + ".log");
+		logManager = new LogManager("./Logs/Instance2/ServerLogs/" + dept.toUpperCase() + ".log");
 
 	}
 
@@ -69,7 +69,7 @@ public class DCRS extends UDPServer {
 
 				recordDetails.put(semester, subMap);	
 				
-				int value=0;
+				int value=1;
 				if(4%2==value) {
 					HashMap<String, HashMap<String, java.lang.Object>> subMap1 = new HashMap<>();
 					HashMap<String, java.lang.Object> detailsMap1 = new HashMap<>();
