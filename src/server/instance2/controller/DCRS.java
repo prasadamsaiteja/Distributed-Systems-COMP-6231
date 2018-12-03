@@ -23,7 +23,7 @@ public class DCRS extends UDPServer {
 	public DCRS(String dept) throws IOException {
 		super(dept);
 		department = dept;
-		logManager = new LogManager(dept.toUpperCase() + ".log");
+		logManager = new LogManager("../COMP6231/Logs/Instance 2/" + dept.toUpperCase() + ".log");
 
 	}
 

@@ -277,14 +277,8 @@ public class ReplicaManagerEngine implements Runnable {
 		} else {
 			List<byte[]> state = (List<byte[]>) UDPUtilities.byteArrayToObject(reply);
 			this.requestQueue = (Queue<Integer>) UDPUtilities.byteArrayToObject(state.get(0));
-
 			
 			System.out.println("Setting state to instance : "+instance);
-			System.out.println("COMP : "+UDPUtilities.byteArrayToObject(state.get(1)));
-			System.out.println("SOEN : "+UDPUtilities.byteArrayToObject(state.get(2)));
-			System.out.println("INSE : "+UDPUtilities.byteArrayToObject(state.get(3)));
-			
-			
 			
 			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
 					Config.getConfig("INSTANCE" + instance + "_COMP_PORT"),

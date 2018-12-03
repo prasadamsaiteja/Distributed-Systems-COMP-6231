@@ -888,10 +888,10 @@ public class EnrollmentImpl implements EnrollmentInterface {
 	 */
 	private static void setupLogging(String fileName) {
 		try {
-			File files = new File(Constants.SERVER_LOG_DIRECTORY + "instance3");
+			File files = new File("./Logs/Instance 3/ServerLogs/");
 			if (!files.exists())
 				files.mkdirs();
-			files = new File(Constants.SERVER_LOG_DIRECTORY + "instance3/" + fileName);
+			files = new File("./Logs/Instance 3/ServerLogs/" + fileName);
 			if (!files.exists())
 				files.createNewFile();
 			MyLogger.setup(files.getAbsolutePath());

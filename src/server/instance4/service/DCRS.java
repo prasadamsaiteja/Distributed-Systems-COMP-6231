@@ -811,7 +811,6 @@ public class DCRS {
 	 */
 	public void setState(HashMap<String, HashMap<String, HashMap<String, Object>>> data) {
 		this._departmentDatabase = data;
-		System.out.println(this._departmentDatabase.toString());
 	}
 	
 }
