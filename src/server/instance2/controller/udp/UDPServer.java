@@ -8,8 +8,12 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
+import server.instance1.controller.Helper;
 import server.instance2.controller.DCRS;
+import server.instance3.util.Utils;
 import utils.Config;
+import utils.Constants;
+import utils.Logger;
 import utils.UDPUtilities;
 
 public class UDPServer extends Thread {
@@ -59,13 +63,12 @@ public class UDPServer extends Thread {
 				byte[] buffer = new byte[1000];
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 				socket.receive(request);
-				String bloop = gettheData(buffer, dept, recordDetails);
+				byte[] bloop = gettheData(buffer, dept, recordDetails);
 				
 				if(bloop == null)
 					continue;
 				
-				byte[] blah = bloop.getBytes();
-				DatagramPacket reply = new DatagramPacket(blah, blah.length, request.getAddress(), request.getPort());
+				DatagramPacket reply = new DatagramPacket(bloop, bloop.length, request.getAddress(), request.getPort());
 				socket.send(reply);
 
 			}
@@ -79,7 +82,7 @@ public class UDPServer extends Thread {
 		}
 	}
 
-	private String gettheData(byte[] buffer, String dep, HashMap<String, HashMap<String, HashMap<String, Object>>> recordDetails2) throws IOException {
+	private byte[] gettheData(byte[] buffer, String dep, HashMap<String, HashMap<String, HashMap<String, Object>>> recordDetails2) throws IOException {
 		// TODO Auto-generated method stub
 		String bloop = new String();
 		
@@ -160,10 +163,36 @@ public class UDPServer extends Thread {
 				String courseId = (data(buffer).toString().split(":")[2]);
 				bloop = dcrs.checkSpaceAvailability(courseId);
 
+			} else {
+
+				if(Utils.byteArrayToObject(buffer) instanceof HashMap) {
+					
+					HashMap<String, Object> temp = (HashMap<String, Object>) Utils.byteArrayToObject(buffer);
+					
+					for (String key : temp.keySet()) {
+						
+						switch(key) {
+						
+							case Constants.OP_GETSTATE:
+								Logger.log("A replica manager request instance copy");
+								return dcrs.deepCopyInstance2State();
+								
+							case Constants.OP_SETSTATE:	
+								dcrs.setState(temp.get(key));
+								return String.valueOf(true).getBytes();
+								
+							case Constants.OP_ISALIVE:
+								Logger.log("Received Is Alive Request");
+								return String.valueOf(true).getBytes();
+						}
+					}
+				}
+				
+				return null;
 			}
 
 		}
-		return bloop;
+		return bloop.getBytes();
 	}
 	
 	private void processSequencerRequest(String receivedRequest) {

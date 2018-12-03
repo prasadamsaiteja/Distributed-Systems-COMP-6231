@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,13 +12,15 @@ import java.util.Map.Entry;
 import server.instance2.controller.udp.UDPClient;
 import server.instance2.controller.udp.UDPServer;
 import server.instance2.logging.LogManager;
+import utils.Constants;
+import utils.UDPUtilities;
 
 public class DCRS extends UDPServer {
 
 	private static LogManager logManager = null;
 
 	private String department;
-	public HashMap<String, HashMap<String, HashMap<String, java.lang.Object>>> recordDetails = new HashMap<>();
+	public static HashMap<String, HashMap<String, HashMap<String, java.lang.Object>>> recordDetails = new HashMap<>();
 	public HashMap<String, String> studentRecords;
 
 	public DCRS(String dept) throws IOException {
@@ -64,7 +67,16 @@ public class DCRS extends UDPServer {
 				detailsMap.put("capacity", capacity);
 				subMap.put(courseID, detailsMap);
 
-				recordDetails.put(semester, subMap);			
+				recordDetails.put(semester, subMap);	
+				
+				HashMap<String, HashMap<String, java.lang.Object>> subMap1 = new HashMap<>();
+				HashMap<String, java.lang.Object> detailsMap1 = new HashMap<>();
+				
+				java.lang.Object obj1 = capacity;
+				
+				detailsMap1.put("capacity", obj1);
+				subMap1.put("COMP6000", detailsMap1);
+				recordDetails.put(semester, subMap1);
 			}
 
 		}
@@ -996,5 +1008,109 @@ public class DCRS extends UDPServer {
 		}
 		return "Failure";
 	}
+	
+	
+	public void setState(Object object) {
+		
+		HashMap<String, HashMap<String, HashMap<String, Object>>> data = (HashMap<String, HashMap<String, HashMap<String, Object>>>) object;
+		//HashMap<Terms, HashMap<String, HashMap<String, String>>> database = new HashMap<>();
+		
+		for (Entry<String, HashMap<String, HashMap<String, Object>>> semester : data.entrySet()) {
+			
+			HashMap<String, HashMap<String, Object>> courses = semester.getValue();
+			HashMap<String, HashMap<String, Object>> databaseCourses = new HashMap<>();
+			
+			for (Entry<String, HashMap<String, Object>> course : courses.entrySet()) {
+				
+				HashMap<String, Object> courseProperties = course.getValue();
+				HashMap<String, Object> databaseCourseProperties = new HashMap<>();
+					
+				for (Entry<String, Object> courseProperty : courseProperties.entrySet()) {
+				
+					if(courseProperty.getKey().equals(Constants.CAPACITY))
+						databaseCourseProperties.put("capacity", String.valueOf(courseProperty.getValue()));
+					
+					/*else if(courseProperty.getKey().equals(Constants.STUDENTS_ENROLLED))
+						databaseCourseProperties.put("capacity", String.valueOf(courseProperty.getValue()));
+					*/
+					else if(courseProperty.getKey().equals("enrolled_students")) {
+						HashSet<String> set = (HashSet<String>) courseProperty.getValue();
+						List<String> students = new ArrayList<String>();
+						for(String s : set) {
+							students.add(s);
+						}
+						
+						databaseCourseProperties.put("studentsinCourse", students); //Course properties
+					}
+				}
+				
+				databaseCourses.put(new String(course.getKey()), databaseCourseProperties); // Course
+				
+			}
+			synchronized (DCRS.class) {				
+
+				recordDetails.put(String.valueOf(semester.getKey()), databaseCourses); //Term
+			}
+		}
+		
+		//Database.setDatabase(database);
+				
+	}
+	
+	public byte[] deepCopyInstance2State() {
+
+		HashMap<String, HashMap<String, HashMap<String, Object>>> deepCopyDatabase = new HashMap<>();	
+		HashMap<String, HashMap<String, HashMap<String, Object>>> database = recordDetails;
+
+		for (Entry<String, HashMap<String, HashMap<String, Object>>> semester : database.entrySet()) {
+
+			HashMap<String, HashMap<String, Object>> courses = semester.getValue();
+			HashMap<String, HashMap<String, Object>> deepCopyCourses = new HashMap<>();
+
+			for (Entry<String, HashMap<String, Object>> course : courses.entrySet()) {
+
+				HashMap<String, Object> courseProperties = course.getValue();
+				HashMap<String, Object> deepCopyCourseProperties = new HashMap<>();
+
+				for (Entry<String, Object> courseProperty : courseProperties.entrySet()) {
+					int size =0, capacity =0;
+
+					if(courseProperty.getKey().equals("capacity")) {
+						capacity = Integer.parseInt(courseProperty.getValue().toString());
+						deepCopyCourseProperties.put(Constants.CAPACITY, Integer.parseInt(courseProperty.getValue().toString()));
+					}
+
+					else if(courseProperty.getKey().equals("studentsinCourse")) {
+						List<String> students = (List<String>) courseProperty.getValue();
+						size = students.size();
+						HashSet<String> set = new HashSet<>();
+						for (String student : students) 
+							set.add(student);
+
+						deepCopyCourseProperties.put(Constants.STUDENT_IDS, set); //Course properties
+					}
+
+					if(size > 0 && capacity >0) {
+
+						deepCopyCourseProperties.put(Constants.STUDENTS_ENROLLED, capacity - size);
+
+					}									
+
+				}
+
+				deepCopyCourses.put(new String(course.getKey()), deepCopyCourseProperties); // Course
+
+			}
+			synchronized (DCRS.class) {
+				deepCopyDatabase.put(new String(semester.getKey().toString()), deepCopyCourses); //Term
+			}
+			
+
+		}
+
+		return UDPUtilities.objectToByteArray(deepCopyDatabase);
+
+}
+	
 
 }
