@@ -40,7 +40,7 @@ public class Logger {
 		
 		try{
 			if(isServer){
-				File logFile = new File("../COMP6231/Logs/Instance 1/Server Logs/" + Database.getInstance().department + ".txt");
+				File logFile = new File("../Logs/Instance1/ServerLogs/" + Database.getInstance().department + ".txt");
 				logFile.getParentFile().mkdirs();
 				logFile.createNewFile();
 				
@@ -51,7 +51,7 @@ public class Logger {
 			
 			else {
 				
-				String folder = "../COMP6231/Logs/Instance 1/Client Logs/";
+				String folder = "../Logs/Instance1/ClientLogs/";
 				
 				if(Cache.getInstance().getClientType() == Cache.ClientType.ADVISOR) folder += "Advisor/";
 				else folder += "Student/";

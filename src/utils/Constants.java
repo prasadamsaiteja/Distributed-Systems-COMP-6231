@@ -19,9 +19,9 @@ public class Constants {
 	public static final String OP_SETSTATE = "setState";
 	
 	
-	public static final String ADVISOR_LOG_DIRECTORY = "./Logs/ClientLogs/";
-	public static final String STUDENT_LOG_DIRECTORY = "./Logs/ClientLogs/";
-	public static final String SERVER_LOG_DIRECTORY = "./Logs/ServerLogs/";
+	public static final String ADVISOR_LOG_DIRECTORY = "./Logs/%s/ClientLogs/";
+	public static final String STUDENT_LOG_DIRECTORY = "./Logs/%s/ClientLogs/";
+	public static final String SERVER_LOG_DIRECTORY = "./Logs/%s/ServerLogs/";
 	public static final String RM_LOG_DIRECTORY = "./Logs/RM/";
 	public static final String UNDERSCORE = "_";
 	public static final String EMPTYSTRING = "";
