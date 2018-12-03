@@ -297,7 +297,6 @@ public class Helper {
 			
 		}
 		
-		System.out.println(deepCopyDatabase);
 		return UDPUtilities.objectToByteArray(deepCopyDatabase);
 		
 	}

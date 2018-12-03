@@ -68,29 +68,7 @@ public class UDPServer extends Thread {
 		
 	}
 	
-	private byte[] processUDPRequest(byte[] requestByte) {
-		
-		if(Utils.byteArrayToObject(requestByte) instanceof HashMap) {
-			HashMap<String, Object> request = (HashMap<String, Object>) Utils.byteArrayToObject(requestByte);
-			for (String key : request.keySet()) {
-				
-				switch(key) {
-				
-					case Constants.OP_GETSTATE:
-						Logger.log("A replica manager request instance copy");
-						return Helper.deepCopyInstance1State();
-						
-					case Constants.OP_SETSTATE:	
-						Helper.setState(request.get(key));
-						return String.valueOf(true).getBytes();
-						
-					case Constants.OP_ISALIVE:
-						Logger.log("Received Is Alive Request");
-						return String.valueOf(true).getBytes();
-
-				}				
-			}
-		}
+	private byte[] processUDPRequest(byte[] requestByte) {		
 		
 		try{		
 		
@@ -122,6 +100,31 @@ public class UDPServer extends Thread {
 					SimpleEntry<Integer, Integer> getCountOfEnrolledCoursesResult = Helper.getCountOfEnrolledCourses(request[1], request[2]);
 					return UDPUtilities.objectToByteArray(getCountOfEnrolledCoursesResult);
 					
+				default:{
+					if(Utils.byteArrayToObject(requestByte) instanceof HashMap) {
+						HashMap<String, Object> temp = (HashMap<String, Object>) Utils.byteArrayToObject(requestByte);
+						
+						for (String key : temp.keySet()) {
+							
+							switch(key) {
+							
+								case Constants.OP_GETSTATE:
+									Logger.log("A replica manager request instance copy");
+									return Helper.deepCopyInstance1State();
+									
+								case Constants.OP_SETSTATE:	
+									Helper.setState(temp.get(key));
+									return String.valueOf(true).getBytes();
+									
+								case Constants.OP_ISALIVE:
+									Logger.log("Received Is Alive Request");
+									return String.valueOf(true).getBytes();
+							}
+						}
+					}
+					
+					return null;
+				}
 			}
 
 		} catch(Exception exception) { exception.printStackTrace(); }

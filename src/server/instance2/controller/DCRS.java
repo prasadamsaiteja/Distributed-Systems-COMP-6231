@@ -258,7 +258,7 @@ public class DCRS extends UDPServer {
 		System.out.println("classs schedule thing:" + getClassSchedule1(studentId));
 		HashMap<String, ArrayList<String>> returnSchedule = getClassSchedule1(studentId);
 
-		return returnSchedule;
+		return new HashMap<>();
 	}
 
 	public synchronized HashMap<String, Integer> listCourseAvailability(String semester) {

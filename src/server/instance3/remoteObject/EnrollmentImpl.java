@@ -723,7 +723,6 @@ public class EnrollmentImpl implements EnrollmentInterface {
 				break;
 			case Constants.OP_SETSTATE:
 				HashMap<String, HashMap<String, HashMap<String, Object>>> temp = (HashMap<String, HashMap<String, HashMap<String, Object>>>) request.get(key);
-				System.out.println(temp.toString());
 				setState(temp);
 				response = String.valueOf(true).getBytes();
 				break;
