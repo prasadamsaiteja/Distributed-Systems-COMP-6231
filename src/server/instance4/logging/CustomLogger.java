@@ -12,9 +12,10 @@ public class CustomLogger {
 		Logger logger = Logger.getLogger(fileName);
 		logger.setUseParentHandlers(false);
 
+		logger.setLevel(Level.INFO);
 		fh = new FileHandler(fileName, true);
 		fh.setFormatter(new CustomFormatter());
-		logger.setLevel(Level.INFO);
+		logger.addHandler(fh);
 	}
 
 }

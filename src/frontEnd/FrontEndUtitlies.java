@@ -42,7 +42,7 @@ public class FrontEndUtitlies {
 			byte[] buffer = message.getBytes();
 
 			DatagramSocket socket = new DatagramSocket();
-			socket.setSoTimeout(500);
+			//socket.setSoTimeout(500);
 
 			InetAddress sequencerIP = InetAddress.getByName(Config.getStringConfig("SEQUENCER_IP"));
 			DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length, sequencerIP,
@@ -405,7 +405,7 @@ public class FrontEndUtitlies {
 
 				int replyReceived = 0;
 
-				while (replyReceived < 3) {
+				while (replyReceived < 4) {
 					DatagramPacket replyPacket = receiveReply();
 					replies.add(replyPacket);
 					replyReceived++;
@@ -416,7 +416,7 @@ public class FrontEndUtitlies {
 
 		try {
 			// TODO change the time
-			return handler.get(3, TimeUnit.SECONDS);
+			return handler.get(5, TimeUnit.SECONDS);
 			// return handler.get(2, TimeUnit.HOURS);
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 
