@@ -12,15 +12,19 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 import server.instance1.Instance1Server;
+import server.instance2.Instance2Server;
 import server.instance3.Instance3Server;
 import server.instance3.util.Utils;
+import server.instance4.Instance4Server;
 import utils.Config;
 import utils.Constants;
 import utils.UDPUtilities;
@@ -65,19 +69,20 @@ public class ReplicaManagerEngine implements Runnable {
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 				// Server waits for the request to come
 				socket.receive(request); // request received
-				LOGGER.info("Received UDP Socket call from "+request.getPort()+" with address[" + request.getAddress() + "]");
+				LOGGER.info("Received UDP Socket call from " + request.getPort() + " with address["
+						+ request.getAddress() + "]");
 				byte[] response = processUDPRequest(request.getData());
 				if (response == null)
 					continue; // will reply to Front end manually
 
 				DatagramPacket reply = new DatagramPacket(response, response.length, request.getAddress(),
 						request.getPort());// reply packet ready
-				socket.send(reply);	// reply sent
+				socket.send(reply); // reply sent
 			}
 		} catch (SocketException e) {
 			LOGGER.severe("SocketException: " + e.getMessage());
 			e.printStackTrace();
-		} catch(SocketTimeoutException e){
+		} catch (SocketTimeoutException e) {
 			LOGGER.severe("SocketTimeOutException: " + e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -119,7 +124,8 @@ public class ReplicaManagerEngine implements Runnable {
 				response = Integer.valueOf(performSoftwareCrashRecovery()).toString().getBytes();
 				break;
 			default:
-				LOGGER.info("NO HANDLER FOR UDP Socket call for method[" + key + "] with parameters[" + request.get(key) + "]");
+				LOGGER.info("NO HANDLER FOR UDP Socket call for method[" + key + "] with parameters[" + request.get(key)
+						+ "]");
 			}
 		}
 
@@ -130,32 +136,37 @@ public class ReplicaManagerEngine implements Runnable {
 	 * @return
 	 */
 	private int performSoftwareCrashRecovery() {
-		
+
 		this.isAlive = false;
-		
-		instantiateNewServer();
-		byte[] reply = getDataFromWorkingReplicaManager();
+
+		instantiateNewServer(4);
+		List<Integer> serverInstances = new ArrayList<>();
+		IntStream.rangeClosed(1, 3).forEach(i -> {
+			if (i != 2) {
+				serverInstances.add(i);
+			}
+		});
+		byte[] reply = getDataFromWorkingReplicaManager(serverInstances);
 		boolean copy = copyState(reply);
-		if(copy==true)
+		if (copy == true)
 			return instanceNo;
 		else
 			return -1;
-		
 	}
 
 	/**
 	 * @return
 	 */
 	private byte[] getCurrentState(int instance) {
-		//TODO change timeout in udp call
+		// TODO change timeout in udp call
 		List<byte[]> state = new ArrayList<>();
 		state.add(Utility.deepCopyQueue(requestQueue));
 		state.add(UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
-				Config.getConfig("INSTANCE" + instance + "_COMP_PORT"), null, Constants.OP_GETSTATE,0));
+				Config.getConfig("INSTANCE" + instance + "_COMP_PORT"), null, Constants.OP_GETSTATE, 0));
 		state.add(UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
-				Config.getConfig("INSTANCE" + instance + "_SOEN_PORT"), null, Constants.OP_GETSTATE,0));
+				Config.getConfig("INSTANCE" + instance + "_SOEN_PORT"), null, Constants.OP_GETSTATE, 0));
 		state.add(UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instance + "_IP"),
-				Config.getConfig("INSTANCE" + instance + "_INSE_PORT"), null, Constants.OP_GETSTATE,0));
+				Config.getConfig("INSTANCE" + instance + "_INSE_PORT"), null, Constants.OP_GETSTATE, 0));
 		return UDPUtilities.objectToByteArray(state);
 	}
 
@@ -166,48 +177,58 @@ public class ReplicaManagerEngine implements Runnable {
 		if (!isAlive()) {
 			this.isAlive = false;
 			instantiateNewServer();
-			byte[] reply = getDataFromWorkingReplicaManager();
+			List<Integer> serverInstances = new ArrayList<>();
+			IntStream.rangeClosed(1, 3).forEach(i -> {
+				if (i != instanceNo) {
+					serverInstances.add(i);
+				}
+			});
+
+			byte[] reply = getDataFromWorkingReplicaManager(serverInstances);
 			boolean copy = copyState(reply);
-			if(copy==true)
+			if (copy == true)
 				return instanceNo;
 			else
 				return -1;
 		} else {
-			return instanceNo;			
+			return instanceNo;
 		}
 	}
 
 	/**
+	 * @param serverInstances
 	 * @return
 	 */
-	private byte[] getDataFromWorkingReplicaManager() {
+	private byte[] getDataFromWorkingReplicaManager(List<Integer> serverInstances) {
 
-		for (int i = 1; i <= 4; i++) {
-			if (i == instanceNo ||i==2||i==4)
-				continue;
+		for (Integer i : serverInstances) {
 
 			byte[] reply = null;
 			try {
 				reply = UDPUtilities.udpCommunication(Config.getStringConfig("RM" + i + "_IP"),
-						Config.getConfig("RM" + i + "_PORT"), null, Constants.OP_ISALIVE,0);	//TODO change timeout
-			} catch(Exception ignored) {}
-			
-			if(reply!=null &&  "true".equalsIgnoreCase(new String(reply).trim())) {
+						Config.getConfig("RM" + i + "_PORT"), null, Constants.OP_ISALIVE, 0); // TODO change timeout
+			} catch (Exception ignored) {
+			}
+
+			if (reply != null && "true".equalsIgnoreCase(new String(reply).trim())) {
 				System.out.println("Fetching database from instance " + i);
 				return getCurrentState(i);
 			}
 		}
 		return null;
 	}
-	
+
 	private boolean isAlive() {
 		byte[] reply;
-		
+
 		reply = UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-				Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT"), null, Constants.OP_ISALIVE, 1000);	//TODO change timeout
-		
-		LOGGER.info("MAKING ISALIVE REQUEST : "+Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT")+" REPLY -"+reply);
-		
+				Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT"), null, Constants.OP_ISALIVE, 1000); // TODO
+																												// change
+																												// timeout
+
+		LOGGER.info("MAKING ISALIVE REQUEST : " + Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT") + " REPLY -"
+				+ reply);
+
 		if (reply == null)
 			return false;
 		else {
@@ -215,33 +236,37 @@ public class ReplicaManagerEngine implements Runnable {
 		}
 	}
 
+	private void instantiateNewServer() {
+		instantiateNewServer(instanceNo);
+	}
+
 	/**
 	 * 
 	 */
-	private void instantiateNewServer() {
+	private void instantiateNewServer(int server) {
 		try {
-			switch(instanceNo) {
-				case 1:
-					Instance1Server.main(null);
-					break;
-				case 2:
-					//TODO
-					break;
-				case 3:
-					Instance3Server.main(null);
-					break;
-				case 4:
-					//TODO
-					break;
+			switch (instanceNo) {
+			case 1:
+				Instance1Server.main(null);
+				break;
+			case 2:
+				Instance2Server.main(null);
+				break;
+			case 3:
+				Instance3Server.main(null);
+				break;
+			case 4:
+				Instance4Server.main(null);
+				break;
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * @param reply
-	 * @return 
+	 * @return
 	 */
 	private boolean copyState(byte[] reply) {
 		if (reply == null) {
@@ -251,39 +276,38 @@ public class ReplicaManagerEngine implements Runnable {
 			this.requestQueue = (Queue<Integer>) UDPUtilities.byteArrayToObject(state.get(0));
 
 			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT"), UDPUtilities.byteArrayToObject(state.get(1)), Constants.OP_SETSTATE,
-					1000);
+					Config.getConfig("INSTANCE" + instanceNo + "_COMP_PORT"),
+					UDPUtilities.byteArrayToObject(state.get(1)), Constants.OP_SETSTATE, 1000);
 			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_SOEN_PORT"), UDPUtilities.byteArrayToObject(state.get(2)), Constants.OP_SETSTATE,
-					1000);
+					Config.getConfig("INSTANCE" + instanceNo + "_SOEN_PORT"),
+					UDPUtilities.byteArrayToObject(state.get(2)), Constants.OP_SETSTATE, 1000);
 			UDPUtilities.udpCommunication(Config.getStringConfig("INSTANCE" + instanceNo + "_IP"),
-					Config.getConfig("INSTANCE" + instanceNo + "_INSE_PORT"), UDPUtilities.byteArrayToObject(state.get(3)), Constants.OP_SETSTATE,
-					1000);
+					Config.getConfig("INSTANCE" + instanceNo + "_INSE_PORT"),
+					UDPUtilities.byteArrayToObject(state.get(3)), Constants.OP_SETSTATE, 1000);
 		}
-		
+
 		System.out.println("State Copied by RM");
-		
+
 		return true;
 	}
-	
-	
+
 	private void killServer() {
 		try {
-			switch(instanceNo) {
-				case 1:
-					Instance1Server.main(null);
-					break;
-				case 2:
-					//TODO
-					break;
-				case 3:
-					Instance3Server.main(null);
-					break;
-				case 4:
-					//TODO
-					break;
+			switch (instanceNo) {
+			case 1:
+				Instance1Server.main(null);
+				break;
+			case 2:
+				// TODO
+				break;
+			case 3:
+				Instance3Server.main(null);
+				break;
+			case 4:
+				// TODO
+				break;
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
