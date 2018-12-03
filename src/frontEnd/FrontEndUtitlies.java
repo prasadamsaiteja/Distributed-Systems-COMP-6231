@@ -68,6 +68,7 @@ public class FrontEndUtitlies {
 		for (DatagramPacket dp : responses) {
 
 			instanceNo = Utility.getInstanceNumber(Config.getReverseMaping(dp.getPort()));
+			System.out.println("Reply received from instance " + instanceNo);
 			reply = UDPUtilities.byteArrayToObject(dp.getData());
 			instanceResponse.put(instanceNo, reply);
 
@@ -93,11 +94,18 @@ public class FrontEndUtitlies {
 			reply = null;
 		}
 
+		
+		
 		// check for software failure
 		for (Integer i : softwareFailureCount.keySet()) {
+			
+			if(softwareFailureCount.get(i) > 0)
+				System.out.println("Software Failure occured instance " + i + " (" + softwareFailureCount.get(i) + " times)");
+			
 			if (softwareFailureCount.get(i) >= 3) {
 				softwareFailureCount.put(i, 0);
-				// inform RM for Software bug
+				
+				System.out.println("Software Failure occured instance " + i + ", reported to replica manager");
 				UDPUtilities.udpCommunication(Config.getStringConfig("RM" + i + "_IP"),
 						Config.getConfig("RM" + i + "_PORT"), null, Constants.OP_SOFTWARE_CRASH, 5000);
 				break;
@@ -150,8 +158,8 @@ public class FrontEndUtitlies {
 
 		for (String key : majority.keySet()) {
 
-			if (max < majority.get(key).size()) {
-				max = majority.get(key).size();
+			if (max < majority.get(key).get(0)) {
+				max = majority.get(key).get(0);
 				maxReply = reply.get(key);
 			} else {
 				faultReply = key;
@@ -204,8 +212,8 @@ public class FrontEndUtitlies {
 
 		for (Boolean key : majority.keySet()) {
 
-			if (max < majority.get(key).size()) {
-				max = majority.get(key).size();
+			if (max < majority.get(key).get(0)) {
+				max = majority.get(key).get(0);
 				maxReply = key;
 			} else {
 				faultReply = key;
@@ -265,8 +273,8 @@ public class FrontEndUtitlies {
 		Boolean faultReply = null;
 
 		for (Boolean key : majority.keySet()) {
-			if (max < majority.get(key).size()) {
-				max = majority.get(key).size();
+			if (max < majority.get(key).get(0)) {
+				max = majority.get(key).get(0);
 				maxReply = key;
 			} else {
 				faultReply = key;
@@ -422,8 +430,10 @@ public class FrontEndUtitlies {
 					new Thread(new Runnable() {
 						public void run() {
 							try {
+								
 								UDPUtilities.udpCommunication(Config.getStringConfig("RM" + i + "_IP"),
 										Config.getConfig("RM" + i + "_PORT"), null, Constants.OP_HARDWARE_CRASH, -1);
+								
 							} catch (Exception ignored) {
 							}
 						}

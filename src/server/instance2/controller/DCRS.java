@@ -1,18 +1,16 @@
 package server.instance2.controller;
 
-import server.instance2.controller.udp.UDPClient;
-import server.instance2.controller.udp.UDPServer;
-import server.instance2.logging.LogManager;
-
 import java.io.IOException;
-
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Map.Entry;
+
+import server.instance2.controller.udp.UDPClient;
+import server.instance2.controller.udp.UDPServer;
+import server.instance2.logging.LogManager;
 
 public class DCRS extends UDPServer {
 
@@ -258,7 +256,10 @@ public class DCRS extends UDPServer {
 		System.out.println("classs schedule thing:" + getClassSchedule1(studentId));
 		HashMap<String, ArrayList<String>> returnSchedule = getClassSchedule1(studentId);
 
-		return new HashMap<>();
+		HashMap<String, ArrayList<String>> s = new HashMap<>();
+		s.put("FALL", new ArrayList<>());
+		
+		return s;
 	}
 
 	public synchronized HashMap<String, Integer> listCourseAvailability(String semester) {
