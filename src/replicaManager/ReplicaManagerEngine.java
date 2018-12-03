@@ -244,7 +244,7 @@ public class ReplicaManagerEngine implements Runnable {
 	 */
 	private void instantiateNewServer(int server) {
 		try {
-			switch (instanceNo) {
+			switch (server) {
 			case 1:
 				Instance1Server.main(null);
 				break;
