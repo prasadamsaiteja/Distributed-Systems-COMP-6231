@@ -297,102 +297,6 @@ public class FrontEndUtitlies {
 		return maxReply;
 	}
 
-	private static <T> Object getMajorityOfRepliesBoolean(List<DatagramPacket> responses, Class<T> type) {
-
-		T instance1, instance2, instance3, instance4;
-		T majorityReply = null;
-		int majorityReplyCounter = 0;
-
-		try {
-
-			for (DatagramPacket datagramPacket : responses) {
-
-				T currentPacketObject = (T) UDPUtilities.byteArrayToObject(datagramPacket.getData());
-				System.out.println(currentPacketObject.toString());
-
-				if (majorityReplyCounter == 0) {
-					majorityReply = currentPacketObject;
-					majorityReplyCounter++;
-				} else if (equals(majorityReply, currentPacketObject)) {
-					majorityReplyCounter++;
-				} else {
-					majorityReplyCounter--;
-				}
-
-				// TODO ip address check
-				if (datagramPacket.getPort() == getPort(1, "COMP") || datagramPacket.getPort() == getPort(1, "SOEN")
-						|| datagramPacket.getPort() == getPort(1, "INSE")) {
-					instance1 = currentPacketObject;
-					System.out.println("Reply received from instance 1");
-				}
-
-				else if (datagramPacket.getPort() == getPort(2, "COMP")
-						|| datagramPacket.getPort() == getPort(2, "SOEN")
-						|| datagramPacket.getPort() == getPort(2, "INSE")) {
-					instance2 = currentPacketObject;
-					System.out.println("Reply received from instance 2");
-				}
-
-				else if (datagramPacket.getPort() == getPort(3, "COMP")
-						|| datagramPacket.getPort() == getPort(3, "SOEN")
-						|| datagramPacket.getPort() == getPort(3, "INSE")) {
-					instance3 = currentPacketObject;
-					System.out.println("Reply received from instance 3");
-				}
-
-				else if (datagramPacket.getPort() == getPort(4, "COMP")
-						|| datagramPacket.getPort() == getPort(4, "SOEN")
-						|| datagramPacket.getPort() == getPort(4, "INSE")) {
-					instance4 = currentPacketObject;
-					System.out.println("Reply received from instance 4");
-				}
-			}
-
-			if (majorityReplyCounter == responses.size()) {
-				System.out.println("Response sent to client");
-				return majorityReply;
-			}
-
-			else {
-				// TODO need to find which instance has the software issue
-				// TODO background thread to notify replica manager about the software failure
-				System.out.println("There is a software issue: " + majorityReplyCounter);
-				System.out.println("Response sent to client");
-				return majorityReply;
-			}
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
-
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> boolean equals(T majorityReply, T currentPacketObject) {
-
-		if (majorityReply instanceof Boolean)
-			return (boolean) majorityReply == (boolean) currentPacketObject;
-
-		else if (majorityReply instanceof SimpleEntry) {
-
-			boolean temp1 = ((SimpleEntry<Boolean, String>) majorityReply).getKey();
-			boolean temp2 = ((SimpleEntry<Boolean, String>) currentPacketObject).getKey();
-
-			return temp1 == temp2;
-
-		} else if (majorityReply instanceof HashMap) {
-
-			HashMap<String, Integer> temp1 = (HashMap<String, Integer>) majorityReply;
-			HashMap<String, Integer> temp2 = (HashMap<String, Integer>) currentPacketObject;
-
-			return temp1.equals(temp2);
-
-		}
-
-		return false;
-	}
-
 	private static List<DatagramPacket> receiveReplies() {
 
 		List<DatagramPacket> replies = new ArrayList<>();
@@ -415,35 +319,29 @@ public class FrontEndUtitlies {
 		});
 
 		try {
-			// TODO change the time
 			return handler.get(5, TimeUnit.SECONDS);
-			// return handler.get(2, TimeUnit.HOURS);
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 
 			handler.cancel(true);
 			System.out.println("Possible Hardware failure detected, notifying replica managers");
 
-			IntStream.rangeClosed(1, 3).forEach(i -> {
-				if (i == 2) {
-
-				} else {
-					new Thread(new Runnable() {
-						public void run() {
-							try {
-								
-								UDPUtilities.udpCommunication(Config.getStringConfig("RM" + i + "_IP"),
-										Config.getConfig("RM" + i + "_PORT"), null, Constants.OP_HARDWARE_CRASH, -1);
-								
-							} catch (Exception ignored) {
-							}
+			IntStream.rangeClosed(1, 4).forEach(i -> {
+				
+				new Thread(new Runnable() {
+					public void run() {
+						try {
+							
+							UDPUtilities.udpCommunication(Config.getStringConfig("RM" + i + "_IP"),
+									Config.getConfig("RM" + i + "_PORT"), null, Constants.OP_HARDWARE_CRASH, 0);
+							
+						} catch (Exception ignored) {
 						}
-					}).start();
-				}
+					}
+				}).start();
+				
 			});
 
-			// TODO check which replica did not respond
-			// TODO background thread to notify replica manager about the hardware failure
-			return replies; // Other instances replies
+			return replies;
 		}
 
 	}
@@ -455,10 +353,6 @@ public class FrontEndUtitlies {
 		FrontEnd.datagramSocket.receive(replyPacket);
 		return replyPacket;
 
-	}
-
-	private static int getPort(int instance, String departmentName) throws FileNotFoundException, IOException {
-		return Config.getConfig("INSTANCE" + instance + "_" + departmentName + "_PORT");
 	}
 
 }
