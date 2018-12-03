@@ -138,15 +138,14 @@ public class ReplicaManagerEngine implements Runnable {
 
 		this.isAlive = false;
 
-		instantiateNewServer(4);
 		List<Integer> serverInstances = new ArrayList<>();
-		IntStream.rangeClosed(1, 3).forEach(i -> {
-			if (i != 2) {
+		IntStream.rangeClosed(1, 4).forEach(i -> {
+			if (i != instanceNo) {
 				serverInstances.add(i);
 			}
 		});
 		byte[] reply = getDataFromWorkingReplicaManager(serverInstances);
-		boolean copy = copyState(reply,4);
+		boolean copy = copyState(reply,instanceNo);
 		if (copy == true)
 			return instanceNo;
 		else
@@ -177,7 +176,7 @@ public class ReplicaManagerEngine implements Runnable {
 			this.isAlive = false;
 			instantiateNewServer();
 			List<Integer> serverInstances = new ArrayList<>();
-			IntStream.rangeClosed(1, 3).forEach(i -> {
+			IntStream.rangeClosed(1, 4).forEach(i -> {
 				if (i != instanceNo) {
 					serverInstances.add(i);
 				}
