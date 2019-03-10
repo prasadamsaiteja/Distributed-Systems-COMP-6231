@@ -1,5 +1,4 @@
-# COMP6231
-## Distributed System Design
+# COMP6231 - Distributed System Design
 
 Project Work
 System capable of handling:
